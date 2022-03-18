@@ -1,5 +1,6 @@
 import {
   Links,
+  LinksFunction,
   LiveReload,
   Meta,
   Outlet,
@@ -7,6 +8,13 @@ import {
   ScrollRestoration,
 } from "remix";
 import type { MetaFunction } from "remix";
+import tailwindStyles from "./styles/tailwind.css";
+import fontStyles from "./styles/fonts.css";
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: tailwindStyles },
+  { rel: "stylesheet", href: fontStyles },
+];
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
