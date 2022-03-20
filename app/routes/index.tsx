@@ -1,13 +1,14 @@
-import Intro from '~/components/Intro';
-import HeroImage from '~/components/HeroImage';
+import Intro from '~/components/Intro'
+import HeroImage from '~/components/HeroImage'
+import ContentHome from '~/components/ContentHome'
 export default function Index() {
-  return (<>
-    <header>
-      <Intro />
-    </header>
-    <main>
+  return (
+    <>
+      <header>
+        <Intro />
+      </header>
       <HeroImage />
-    </main>
-  </>
-  );
+      <ContentHome />
+    </>
+  )
 }

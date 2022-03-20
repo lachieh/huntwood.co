@@ -48,9 +48,9 @@ const Intro = (props: Props) => {
   return (
     <motion.div
       initial={{ height: `${windowHeight}px` }}
-      animate={{ height: '40px' }}
+      animate={{ height: '64px' }}
       transition={{ duration: 1, delay: 2.5, ease: 'easeInOut' }}
-      className="flex flex-col items-center justify-center h-screen relative"
+      className="flex flex-col items-center justify-center h-screen relative bg-white"
     >
       <motion.h1
         initial={{ fontSize: `${windowWidth * 0.08}px` }}
