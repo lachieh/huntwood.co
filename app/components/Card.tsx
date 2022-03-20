@@ -1,6 +1,8 @@
 import React from 'react'
 import topLeft from '~/images/corner-top-left.svg'
 import topRight from '~/images/corner-top-right.svg'
+import flourishLeft from '~/images/flourish-left.svg'
+import flourishRight from '~/images/flourish-right.svg'
 import { motion, MotionProps } from 'framer-motion'
 
 type Props = {
@@ -39,7 +41,8 @@ const Card = ({ front, back, flourish = false, flipped = false }: Props) => {
         <div className="p-4 min-h-[94vw] lg:min-h-[954px] flex flex-col justify-center">
           {flourish && (
             <>
-              <div className="pointer-events-none flex absolute top-4 left-4 w-[calc(100%_-_2em)]">
+              <img className="w-full sm:hidden" src={flourishLeft} alt="" />
+              <div className="pointer-events-none hidden sm:flex absolute top-4 left-4 w-[calc(100%_-_2em)]">
                 <img
                   src={topLeft}
                   alt=""
@@ -53,12 +56,17 @@ const Card = ({ front, back, flourish = false, flipped = false }: Props) => {
               </div>
             </>
           )}
-          <div className={`${flourish ? 'px-[20%] py-[28%]' : 'p-4'}`}>
+          <div
+            className={`${
+              flourish ? 'py-[10%] sm:px-[20%] sm:py-[28%]' : 'p-4'
+            }`}
+          >
             {front}
           </div>
           {flourish && (
             <>
-              <div className="pointer-events-none flex rotate-180 absolute bottom-4 left-4 w-[calc(100%_-_2em)]">
+              <img className="w-full sm:hidden" src={flourishRight} alt="" />
+              <div className="hidden sm:flex pointer-events-none rotate-180 absolute bottom-4 left-4 w-[calc(100%_-_2em)]">
                 <img
                   src={topLeft}
                   alt=""
@@ -81,7 +89,7 @@ const Card = ({ front, back, flourish = false, flipped = false }: Props) => {
           backfaceVisibility: 'hidden',
         }}
         animate={flipped ? 'visible' : 'hidden'}
-        className="bg-blue-dark text-white shadow-xl shadow-black/50 rounded-lg absolute top-0 w-full h-full"
+        className="bg-blue-dark text-white shadow-xl shadow-black/50 rounded-lg absolute top-0 w-full h-full flex flex-col justify-center items-center"
       >
         <div className="p-4">{back}</div>
       </motion.aside>
