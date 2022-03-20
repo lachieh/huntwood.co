@@ -6,7 +6,7 @@ import RSVPForm from '~/components/RSVPForm'
 import { Link } from 'remix'
 
 export default function Index() {
-  const [flipped, setFlipped] = useState(false)
+  const [flipped, setFlipped] = useState(true)
   return (
     <Card
       flourish
@@ -34,9 +34,7 @@ export default function Index() {
             </Link>
           </nav>
           <div className="mb-4">
-            <Button onClick={() => setFlipped(true)}>
-              <Text>Find your Invite</Text>
-            </Button>
+            <Button onClick={() => setFlipped(true)}>Find your Invite</Button>
           </div>
         </div>
       }

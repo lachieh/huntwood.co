@@ -10,13 +10,14 @@ type Props = {
     | 'blue-light'
     | 'blue-mid'
     | 'blue-dark'
+    | 'white'
     | 'copy'
 }
 
 const Text = ({
   as = 'span',
   size = 'md',
-  color = 'copy',
+  color,
   children,
 }: PropsWithChildren<Props>) => {
   const Tag = as
@@ -29,7 +30,11 @@ const Text = ({
   const extraClasses = size === 'lg' ? 'uppercase tracking-widest' : ''
 
   return (
-    <Tag className={`text-${color} ${textSize} ${extraClasses} leading-6`}>
+    <Tag
+      className={`${
+        color ? 'text-' + color : ''
+      } ${textSize} ${extraClasses} leading-6`}
+    >
       {children}
     </Tag>
   )

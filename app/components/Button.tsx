@@ -1,7 +1,6 @@
-import React, { HTMLAttributes, PropsWithChildren } from 'react'
+import { ButtonHTMLAttributes } from 'react'
 
-interface Props extends HTMLAttributes<HTMLButtonElement> {
-  as?: keyof JSX.IntrinsicElements
+interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: 'sm' | 'md' | 'lg'
   color?:
     | 'green-dark'
@@ -10,7 +9,9 @@ interface Props extends HTMLAttributes<HTMLButtonElement> {
     | 'blue-light'
     | 'blue-mid'
     | 'blue-dark'
+    | 'white'
     | 'copy'
+  variant?: 'solid' | 'outline'
 }
 // [--button-color:blue-dark]
 // [--button-color:blue-mid]
@@ -21,11 +22,11 @@ interface Props extends HTMLAttributes<HTMLButtonElement> {
 // [--button-color:copy]
 
 const Button = ({
-  as = 'button',
   color = 'blue-dark',
+  variant = 'outline',
   children,
   ...props
-}: PropsWithChildren<Props>) => {
+}: Props) => {
   const buttonColor = {
     'green-dark': '[--button-color:rgb(6_103_56)]',
     'green-mid': '[--button-color:rgb(61_123_81)]',
@@ -33,12 +34,19 @@ const Button = ({
     'blue-light': '[--button-color:rgb(39_102_116)]',
     'blue-mid': '[--button-color:rgb(40_82_100)]',
     'blue-dark': '[--button-color:rgb(38_62_84)]',
+    white: '[--button-color:rgb(255_255_255)]',
     copy: '[--button-color:#6C6E70]',
   }[color]
 
+  const buttonStyle = {
+    outline:
+      'text-[color:var(--button-color)] hover:text-white border border-[color:var(--button-color)] hover:bg-[color:var(--button-color)]',
+    solid:
+      'text-white hover:text-[color:var(--button-color)] border border-[color:var(--button-color)] bg-[color:var(--button-color)] hover:bg-white',
+  }[variant]
   return (
     <button
-      className={`${buttonColor} text-[color:var(--button-color)] border border-[color:var(--button-color)] pt-1 pb-2 px-5 hover:bg-[color:var(--button-color)] hover:text-white transition-colors`}
+      className={`${buttonColor} ${buttonStyle} pt-1 pb-2 px-5 transition-colors`}
       {...props}
     >
       {children}
