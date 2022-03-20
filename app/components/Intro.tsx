@@ -47,10 +47,15 @@ const Intro = (props: Props) => {
 
   return (
     <motion.div
-      initial={{ height: `${windowHeight}px` }}
-      animate={{ height: '64px' }}
-      transition={{ duration: 1, delay: 2.5, ease: 'easeInOut' }}
-      className="flex flex-col items-center justify-center h-screen relative bg-white"
+      initial={{ height: `${windowHeight}px`, visibility: 'visible' }}
+      animate={{ height: '64px', visibility: 'hidden' }}
+      transition={{
+        duration: 1,
+        delay: 2.5,
+        ease: 'easeInOut',
+        visibility: { duration: 0, delay: 3.5, ease: 'linear' },
+      }}
+      className="flex flex-col items-center justify-center h-screen relative bg-white -mt-16"
     >
       <motion.h1
         initial={{ fontSize: `${windowWidth * 0.08}px` }}

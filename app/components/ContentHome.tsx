@@ -15,19 +15,13 @@ const ContentHome = (props: Props) => {
       flipped={flipped}
       front={
         <div className="flex flex-col justify-center items-center h-full">
-          <h2 className="text-center leading-[1em] mb-8">
+          <h2 className="text-center leading-loose mb-4">
             <Text>Celebrating the wedding of</Text>
             <br />
             <Text size="lg">
-              Natalie Michelle Roberts
-              <br />
-              &amp;
+              Natalie Michelle Roberts &amp;
               <br />
               Mitchell William Heywood
-            </Text>
-            <br />
-            <Text>
-              September 24<sup>th</sup>, 2022
             </Text>
           </h2>
           <nav className="divide-x divide-copy text-center mb-8">

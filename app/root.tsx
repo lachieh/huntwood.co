@@ -10,6 +10,9 @@ import {
 import type { MetaFunction } from 'remix'
 import tailwindStyles from './styles/tailwind.css'
 import fontStyles from './styles/fonts.css'
+import Nav from '~/components/Nav'
+import Intro from '~/components/Intro'
+import HeroImage from '~/components/HeroImage'
 
 export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: tailwindStyles },
@@ -30,6 +33,11 @@ export default function App() {
         <Links />
       </head>
       <body>
+        <Nav />
+        <aside>
+          <Intro />
+          <HeroImage />
+        </aside>
         <Outlet />
         <ScrollRestoration />
         <Scripts />
