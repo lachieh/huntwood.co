@@ -1,19 +1,39 @@
 import { json, LoaderFunction } from 'remix'
+import * as netlifyGraph from '../../../netlify/functions/netlifyGraph'
 
-export const loader: LoaderFunction = async ({ request }) => {
+export interface Song {
+  uri: string
+  name: string
+  artists: string[]
+  album: string
+  image: string
+}
+
+export const loader: LoaderFunction = async ({ request, context }) => {
   const url = new URL(request.url)
   const query = url.searchParams.get('q')
+
+  if (!query) return json({ error: 'No query' }, 400)
+
+  const { errors, data } = await netlifyGraph.fetchFindTracks(
+    { query },
+    { accessToken: context.netlifyGraphToken },
+  )
+
+  if (errors) {
+    return json({ error: errors }, 500)
+  }
+
   return json(
-    [
-      {
-        id: 1,
-        title: query,
-        artist: 'Artist 1',
-        album: 'Album 1',
-        year: '2000',
-        cover: 'https://picsum.photos/200/300/?random',
-      },
-    ],
+    data.spotify.search.tracks.map(
+      (song): Song => ({
+        uri: song.uri,
+        name: song.name,
+        artists: song.artists.map((artist) => artist.name),
+        album: song.album.name,
+        image: song.album.images[0].url,
+      }),
+    ),
     200,
   )
 }

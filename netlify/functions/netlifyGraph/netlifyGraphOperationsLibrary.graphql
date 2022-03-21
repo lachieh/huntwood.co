@@ -1,0 +1,23 @@
+query FindTracks($query: String!) @netlify(id: """ea914478-dc01-4088-8a75-62aee61062e7""", doc: """An example query to start with.""") {
+  spotify {
+    search(data: {query: $query}) {
+      tracks {
+        name
+        uri
+        href
+        durationMs
+        artists {
+          name
+        }
+        album {
+          name
+          images {
+            height
+            width
+            url
+          }
+        }
+      }
+    }
+  }
+}

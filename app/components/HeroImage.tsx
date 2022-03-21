@@ -7,7 +7,7 @@ type Props = {
 
 const HeroImage = ({ fade }: Props) => {
   return (
-    <picture className="h-screen fixed -z-10 top-0">
+    <picture className="h-screen w-full fixed -z-10 top-0">
       <motion.img
         key="heroimage"
         initial={{ opacity: fade ? 0 : 1 }}

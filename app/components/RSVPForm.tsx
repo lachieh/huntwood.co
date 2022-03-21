@@ -2,14 +2,22 @@ import { useFetcher } from 'remix'
 import Button from '~/components/Button'
 import type { Guest } from '~/routes/api/invite'
 import Text from '~/components/Text'
+import SpotifyField from './SpotifyField'
+import { useState } from 'react'
+import { Song } from '~/routes/api/song'
 
 type Props = {}
 
 const RSVPForm = (props: Props) => {
   const guest = useFetcher<Guest>()
-  console.log(guest.data)
+  const rsvp = useFetcher<{ success: boolean; message: string }>()
+  const [selectedSongs, setSelectedSongs] = useState<Song[]>([])
   return guest.data?.success ? (
-    'Success'
+    <rsvp.Form method="get" action="/api/rsvp">
+      <div>
+        <SpotifyField onChange={(songs) => setSelectedSongs(songs)} />
+      </div>
+    </rsvp.Form>
   ) : (
     <guest.Form
       className="flex flex-col justify-center items-center w-80 max-w-full"
@@ -32,7 +40,7 @@ const RSVPForm = (props: Props) => {
             <Text size="sm">Your Name</Text>
             <input
               name="q"
-              className="text-copy px-4 py-2 w-full outline-offset-2 outline-2 outline-green-light focus-visible:[outline-style:solid]"
+              className="text-copy px-4 py-2 mt-1 w-full outline-offset-2 outline-2 outline-green-light focus-visible:[outline-style:solid]"
             />
           </label>
           {guest.data?.error && (

@@ -31,9 +31,7 @@ const Text = ({
 
   return (
     <Tag
-      className={`${
-        color ? 'text-' + color : ''
-      } ${textSize} ${extraClasses} leading-6`}
+      className={`${color ? 'text-' + color : ''} ${textSize} ${extraClasses}`}
     >
       {children}
     </Tag>
