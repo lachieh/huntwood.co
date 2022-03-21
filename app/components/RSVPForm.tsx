@@ -1,68 +1,96 @@
-import { useFetcher } from 'remix'
+import { Link } from 'react-router-dom'
+import { Form, useActionData, useFetcher, useTransition } from 'remix'
 import Button from '~/components/Button'
-import type { Guest } from '~/routes/api/invite'
 import Text from '~/components/Text'
-import SpotifyField from './SpotifyField'
-import { useState } from 'react'
-import { Song } from '~/routes/api/song'
+import { Guest } from '~/routes/rsvp'
 
 type Props = {}
 
+const guestIsValid = (
+  data: { guest: Guest } | { error: string },
+): data is { guest: Guest } => {
+  return (
+    !(data as { error: string }).error && !!(data as { guest: Guest }).guest
+  )
+}
+
 const RSVPForm = (props: Props) => {
-  const guest = useFetcher<Guest>()
-  const rsvp = useFetcher<{ success: boolean; message: string }>()
-  const [selectedSongs, setSelectedSongs] = useState<Song[]>([])
-  return guest.data?.success ? (
-    <rsvp.Form method="get" action="/api/rsvp">
-      <div>
-        <SpotifyField onChange={(songs) => setSelectedSongs(songs)} />
-      </div>
-    </rsvp.Form>
-  ) : (
+  const guest = useFetcher<{ guest: Guest } | { error: string }>()
+  return (
     <guest.Form
-      className="flex flex-col justify-center items-center w-80 max-w-full"
-      method="get"
-      action="/api/invite"
+      className="flex flex-col justify-center items-center w-full max-w-xs"
+      method="post"
+      action="/rsvp"
     >
       <br />
       <div className="text-white">
-        <>
-          <div className="mb-4">
+        <div className="mb-4">
+          <div className="text-center">
             <Text as="h2" size="lg">
               RSVP
             </Text>
-            <Text>
-              If you're responding for you and a guest (or your family), you'll
-              be able to RSVP for your entire group.
-            </Text>
           </div>
-          <label className="flex flex-col mb-4 w-full">
-            <Text size="sm">Your Name</Text>
-            <input
-              name="q"
-              className="text-copy px-4 py-2 mt-1 w-full outline-offset-2 outline-2 outline-green-light focus-visible:[outline-style:solid]"
-            />
-          </label>
-          {guest.data?.error && (
+          <Text>
+            If you're responding for you and a guest (or your family), you'll be
+            able to RSVP for your entire group.
+          </Text>
+        </div>
+        <label className="flex flex-col mb-4 w-full">
+          <Text size="sm">Your Name</Text>
+          <input
+            name="name"
+            className="text-copy px-4 py-2 mt-1 w-full outline-offset-2 outline-2 outline-green-light focus-visible:[outline-style:solid]"
+          />
+        </label>
+        {guest.data &&
+          (guest.data as { error: string })?.error === 'Guest not found' && (
             <div className="mb-4">
               <Text size="sm">
                 Uh oh! We can&rsquo;t find your invite. Give it another go with
-                the name on your invite or contact the couple.
+                the name on your invite or contact Mitchell or Natalie.
               </Text>
             </div>
           )}
-          <Button
-            variant="solid"
-            color="green-light"
-            type="submit"
-            style={{ width: '100%' }}
-            disabled={guest.state === 'submitting'}
-          >
-            {guest.state === 'submitting'
-              ? 'Searching...'
-              : 'Find your invitation'}
-          </Button>
-        </>
+        <Button
+          variant="solid"
+          color="green-light"
+          type="submit"
+          style={{ width: '100%' }}
+          disabled={guest.state === 'submitting'}
+        >
+          {guest.state === 'submitting'
+            ? 'Searching...'
+            : 'Find your invitation'}
+        </Button>
+
+        {guest.data && (guest.data as { guest: Guest })?.guest && (
+          <>
+            <div className="mt-6 text-center">
+              <Text size="md">We found your invite!</Text>
+              <br />
+              <Text size="md">
+                {(guest.data as { guest: Guest }).guest.names}
+              </Text>
+            </div>
+            <div className="mt-4">
+              <Button
+                variant="solid"
+                color="green-dark"
+                style={{ width: '100%' }}
+              >
+                <Link to={`/rsvp/${(guest.data as { guest: Guest }).guest.id}`}>
+                  Continue
+                </Link>
+              </Button>
+              <div className="text-center mt-4">
+                <Text size="sm">
+                  Not you? Try again with the name on your invite or contact
+                  Mitchell or Natalie.
+                </Text>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </guest.Form>
   )

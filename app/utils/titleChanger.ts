@@ -3,6 +3,7 @@ export function changeTitle(pre: string, middle: string, post: string) {
   let step = 0
   let direction = 1
   const increment = (): void => {
+    let delay = 300
     step += direction
     const midStart = Math.floor(middle.length / 2)
     const midEnd = Math.ceil(middle.length / 2)
@@ -12,9 +13,10 @@ export function changeTitle(pre: string, middle: string, post: string) {
     const newTitle = pre + middleChunk + post
     if (step >= midStart || step < 0) {
       direction = -direction
+      delay = 3000
     }
     window.document.title = newTitle
-    setTimeout(increment, 1000)
+    setTimeout(increment, delay)
   }
   increment()
 }

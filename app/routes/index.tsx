@@ -6,7 +6,7 @@ import RSVPForm from '~/components/RSVPForm'
 import { Link } from 'remix'
 
 export default function Index() {
-  const [flipped, setFlipped] = useState(true)
+  const [flipped, setFlipped] = useState(false)
   return (
     <Card
       flourish
