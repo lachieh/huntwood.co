@@ -32,13 +32,17 @@ const Card = ({ front, back, flourish = false, flipped = false }: Props) => {
   }
 
   return (
-    <div className="mt-[80vh] mb-12 relative max-w-[954px] w-[95%] mx-auto [perspective:400vw]">
+    <div className="mb-12 relative max-w-[954px] w-[95%] mx-auto [perspective:400vw]">
       <motion.main
         {...frontAnimationProps}
         animate={flipped ? 'hidden' : 'visible'}
         className="bg-white shadow-xl shadow-black/50 rounded-lg relative"
       >
-        <div className="p-4 min-h-[94vw] lg:min-h-[954px] flex flex-col justify-center">
+        <div
+          className={`p-4 ${
+            back ? 'min-h-[94vw] lg:min-h-[954px]' : ''
+          } flex flex-col justify-center`}
+        >
           {flourish && (
             <>
               <img className="w-full sm:hidden" src={flourishLeft} alt="" />

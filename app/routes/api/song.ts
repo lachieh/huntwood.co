@@ -13,7 +13,7 @@ export const loader: LoaderFunction = async ({ request, context }) => {
   const url = new URL(request.url)
   const query = url.searchParams.get('q')
 
-  if (!query) return json({ error: 'No query' }, 400)
+  if (!query) return json([], 404)
 
   const { errors, data } = await netlifyGraph.fetchFindTracks(
     { query },

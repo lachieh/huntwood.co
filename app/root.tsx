@@ -13,6 +13,7 @@ import fontStyles from './styles/fonts.css'
 import Nav from '~/components/Nav'
 import Intro from '~/components/Intro'
 import HeroImage from '~/components/HeroImage'
+import NavSecondary from './components/NavSecondary'
 
 export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: tailwindStyles },
@@ -38,6 +39,7 @@ export default function App() {
           <Intro />
           <HeroImage />
         </aside>
+        <NavSecondary />
         <Outlet />
         <ScrollRestoration />
         <Scripts />

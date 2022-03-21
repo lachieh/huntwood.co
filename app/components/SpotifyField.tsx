@@ -13,12 +13,18 @@ const responseIsValid = (data: Song[] | { error: string }): data is Song[] => {
 
 const SpotifyField = ({ onChange }: Props) => {
   const [selectedSongs, setSelectedSongs] = useState<Song[]>([])
+  const [currentSearchTerm, setCurrentSearchTerm] = useState('')
   const ref = useRef<number>()
   const songs = useFetcher<Song[] | { error: string }>()
 
   const handleSearch = (form: HTMLFormElement | null) => {
     if (ref.current) clearTimeout(ref.current)
-    ref.current = setTimeout(() => songs.submit(form), 500) as unknown as number
+    const input = (form?.elements?.namedItem('q') as HTMLInputElement) || null
+    setCurrentSearchTerm(input.value)
+    ref.current = setTimeout(
+      () => input.value && songs.submit(form),
+      500,
+    ) as unknown as number
   }
 
   const getNewSongs = (song: Song) => {
@@ -80,7 +86,11 @@ const SpotifyField = ({ onChange }: Props) => {
       {songs.data &&
         (responseIsValid(songs.data) ? (
           !songs.data.length ? (
-            'No songs found'
+            currentSearchTerm ? (
+              'No songs found'
+            ) : (
+              'Please enter a song title'
+            )
           ) : (
             <div className="flex flex-col">
               {songs.data
