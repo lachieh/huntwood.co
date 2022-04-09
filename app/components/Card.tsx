@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { PropsWithChildren } from 'react'
 import topLeft from '~/images/corner-top-left.svg'
 import topRight from '~/images/corner-top-right.svg'
 import flourishLeft from '~/images/flourish-left.svg'
@@ -8,11 +8,17 @@ import { motion, MotionProps } from 'framer-motion'
 type Props = {
   flourish?: boolean
   flipped?: boolean
-  front: React.ReactNode
+  front?: React.ReactNode
   back?: React.ReactNode
 }
 
-const Card = ({ front, back, flourish = false, flipped = false }: Props) => {
+const Card = ({
+  front,
+  back,
+  children,
+  flourish = false,
+  flipped = false,
+}: PropsWithChildren<Props>) => {
   const baseImageClasses = 'w-[56.5%]'
   const frontAnimationProps: MotionProps = {
     variants: {
@@ -65,7 +71,7 @@ const Card = ({ front, back, flourish = false, flipped = false }: Props) => {
               flourish ? 'py-[10%] sm:px-[20%] sm:py-[28%]' : 'p-4'
             }`}
           >
-            {front}
+            {children ?? front ?? ''}
           </div>
           {flourish && (
             <>

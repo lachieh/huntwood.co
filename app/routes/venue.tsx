@@ -1,3 +1,9 @@
+import Card from '~/components/Card'
+
 export default function Venue() {
-  return <div>Venue</div>
+  return (
+    <div className="mt-8">
+      <Card>Venue</Card>
+    </div>
+  )
 }

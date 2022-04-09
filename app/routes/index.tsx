@@ -4,6 +4,8 @@ import Card from '~/components/Card'
 import Button from '~/components/Button'
 import RSVPForm from '~/components/RSVPForm'
 import { Link, useLocation } from 'remix'
+import { motion } from 'framer-motion'
+import { pageAnimation } from '~/root'
 
 export default function Index() {
   const [flipped, setFlipped] = useState(false)

@@ -1,3 +1,9 @@
+import Card from '~/components/Card'
+
 export default function FAQ() {
-  return <div>FAQ</div>
+  return (
+    <div className="mt-8">
+      <Card>FAQ</Card>
+    </div>
+  )
 }

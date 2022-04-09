@@ -14,6 +14,9 @@ import Nav from '~/components/Nav'
 import Intro from '~/components/Intro'
 import HeroImage from '~/components/HeroImage'
 import NavSecondary from './components/NavSecondary'
+import { AnimatePresence, MotionProps, motion } from 'framer-motion'
+import { useLocation } from 'remix'
+import { useOutlet } from 'react-router'
 
 export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: tailwindStyles },
@@ -26,21 +29,35 @@ export const meta: MetaFunction = () => ({
   viewport: 'width=device-width,initial-scale=1',
 })
 
+export const pageAnimation: MotionProps = {
+  transition: { duration: 0.5, ease: 'easeInOut' },
+  initial: { x: '-100%', rotate: '-10deg' },
+  animate: { x: '0', rotate: '0deg' },
+  exit: { x: '100%', rotate: '10deg' },
+}
+
 export default function App() {
+  const location = useLocation()
+  const outlet = useOutlet()
+
   return (
     <html lang="en">
       <head>
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="overflow-x-hidden">
         <Nav />
         <aside>
           <Intro />
           <HeroImage />
         </aside>
         <NavSecondary />
-        <Outlet />
+        <AnimatePresence exitBeforeEnter>
+          <motion.div key={location.pathname} {...pageAnimation}>
+            {outlet}
+          </motion.div>
+        </AnimatePresence>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
