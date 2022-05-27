@@ -3,10 +3,14 @@ import { motion, MotionProps } from 'framer-motion'
 type Props = {}
 
 const Intro = (props: Props) => {
-  if (typeof document === 'undefined') return null
-
-  const windowWidth = window?.innerWidth ?? document.body.clientWidth
-  const windowHeight = window?.innerHeight ?? document.body.clientHeight
+  const windowWidth =
+    typeof window !== 'undefined'
+      ? window?.innerWidth ?? document?.body?.clientWidth
+      : null
+  const windowHeight =
+    typeof window !== 'undefined'
+      ? window?.innerHeight ?? document?.body?.clientHeight
+      : null
 
   const baseAnimationProps = {
     transition: {
@@ -47,7 +51,10 @@ const Intro = (props: Props) => {
 
   return (
     <motion.div
-      initial={{ height: `${windowHeight}px`, visibility: 'visible' }}
+      initial={{
+        height: windowHeight ? `${windowHeight}px` : '100vh',
+        visibility: 'visible',
+      }}
       animate={{ height: '64px', visibility: 'hidden' }}
       transition={{
         duration: 1,
@@ -55,10 +62,10 @@ const Intro = (props: Props) => {
         ease: 'easeInOut',
         visibility: { duration: 0, delay: 3.5, ease: 'linear' },
       }}
-      className="flex flex-col items-center justify-center h-screen relative bg-white -mt-16 z-30"
+      className="flex flex-col items-center justify-center h-screen w-full relative bg-white -mt-16 z-30"
     >
       <motion.h1
-        initial={{ fontSize: `${windowWidth * 0.08}px` }}
+        initial={{ fontSize: windowWidth ? `${windowWidth * 0.08}px` : '64px' }}
         animate={{ fontSize: '32px' }}
         transition={{ duration: 1, delay: 2.5, ease: 'easeInOut' }}
         className="text-[8.34vw] leading-none"
