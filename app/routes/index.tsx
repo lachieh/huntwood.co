@@ -3,9 +3,14 @@ import Text from '~/components/Text'
 import Card from '~/components/Card'
 import Button from '~/components/Button'
 import RSVPForm from '~/components/RSVPForm'
-import { Link, useLocation } from 'remix'
-import { motion } from 'framer-motion'
-import { pageAnimation } from '~/root'
+import { Link, LoaderFunction, useLocation } from 'remix'
+import { rsvpToken } from '~/cookies'
+
+export const loader: LoaderFunction = async ({ request, params }) => {
+  const cookieHeader = request.headers.get('Cookie')
+  const cookie = (await rsvpToken.parse(cookieHeader)) || {}
+  return cookie.rsvpToken ?? null
+}
 
 export default function Index() {
   const [flipped, setFlipped] = useState(false)

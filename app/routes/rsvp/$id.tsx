@@ -1,16 +1,14 @@
-import { LoaderFunction, redirect, useLoaderData } from 'remix'
-import { getGuests } from '~/utils/sheetsService'
+import { LoaderFunction, useLoaderData } from 'remix'
 import { Guest } from '~/routes/rsvp'
 import Card from '~/components/Card'
 import SpotifyField from '~/components/SpotifyField'
 import { Song } from '~/routes/api/song'
+import { rsvpToken } from '~/cookies'
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-  const { id } = params
-  const guests = await getGuests()
-  const guest = guests.find((g) => g.id === id)
-  if (!guest) return redirect('/')
-  return guest
+  const cookieHeader = request.headers.get('Cookie')
+  const cookie = (await rsvpToken.parse(cookieHeader)) || {}
+  return cookie.rsvpToken ?? null
 }
 
 export default function RSVP() {

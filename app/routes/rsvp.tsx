@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react'
 import { Outlet, useNavigate, useParams } from 'react-router'
-import { ActionFunction, json, redirect } from 'remix'
+import { ActionFunction, json } from 'remix'
 import { getGuests } from '../utils/sheetsService'
+import { rsvpToken } from '~/cookies'
 
 export interface Guest {
   id: string
@@ -22,6 +23,8 @@ type Props = {}
 
 export const action: ActionFunction = async ({ request }) => {
   const body = await request.formData()
+  const cookieHeader = request.headers.get('Cookie')
+  const cookie = (await rsvpToken.parse(cookieHeader)) || {}
   try {
     const name = (body.get('name') as string)?.trim().toLowerCase()
     if (!name) return json({ error: 'name is required' }, 400)
@@ -29,8 +32,14 @@ export const action: ActionFunction = async ({ request }) => {
     const guests = await getGuests()
     const guest = guests.find((g) => g.names.toLowerCase().includes(name))
     if (!guest) return json({ error: 'Guest not found' }, 404)
-
-    return json({ success: true, guest }, 200)
+    cookie.rsvpToken = guest
+    return json(
+      { success: true, guest },
+      {
+        headers: { 'Set-Cookie': await rsvpToken.serialize(cookie) },
+        status: 200,
+      },
+    )
   } catch (e) {
     console.error(e)
     return json({ error: 'Something went wrong, please try again' }, 500)

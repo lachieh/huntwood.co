@@ -1,23 +1,26 @@
 import { Link } from 'react-router-dom'
-import { Form, useActionData, useFetcher, useTransition } from 'remix'
+import {
+  Form,
+  useActionData,
+  useFetcher,
+  useLoaderData,
+  useTransition,
+} from 'remix'
 import Button from '~/components/Button'
 import Text from '~/components/Text'
 import { Guest } from '~/routes/rsvp'
 
 type Props = {}
 
-const guestIsValid = (
-  data: { guest: Guest } | { error: string },
-): data is { guest: Guest } => {
-  return (
-    !(data as { error: string }).error && !!(data as { guest: Guest }).guest
-  )
-}
-
 const RSVPForm = (props: Props) => {
-  const guest = useFetcher<{ guest: Guest } | { error: string }>()
+  const guestFetcher = useFetcher<{ guest: Guest } | { error: string }>()
+  const existingGuest = (useLoaderData() as Guest | undefined) || undefined
+  const guestInfo =
+    (guestFetcher.data as { guest: Guest })?.guest ?? existingGuest
+  const guestError = (guestFetcher?.data as { error: string })?.error
+
   return (
-    <guest.Form
+    <guestFetcher.Form
       className="flex flex-col justify-center items-center w-full max-w-xs"
       method="post"
       action="/rsvp"
@@ -40,38 +43,36 @@ const RSVPForm = (props: Props) => {
           <input
             name="name"
             required
+            value={existingGuest?.names}
             className="text-copy px-4 py-2 mt-1 w-full outline-offset-2 outline-2 outline-green-light focus-visible:[outline-style:solid]"
           />
         </label>
-        {guest.data &&
-          (guest.data as { error: string })?.error === 'Guest not found' && (
-            <div className="mb-4">
-              <Text size="sm">
-                Uh oh! We can&rsquo;t find your invite. Give it another go with
-                the name on your invite or contact Mitchell or Natalie.
-              </Text>
-            </div>
-          )}
+        {guestError === 'Guest not found' && (
+          <div className="mb-4">
+            <Text size="sm">
+              Uh oh! We can&rsquo;t find your invite. Give it another go with
+              the name on your invite or contact Mitchell or Natalie.
+            </Text>
+          </div>
+        )}
         <Button
           variant="solid"
           color="green-light"
           type="submit"
           style={{ width: '100%' }}
-          disabled={guest.state === 'submitting'}
+          disabled={guestFetcher.state === 'submitting'}
         >
-          {guest.state === 'submitting'
+          {guestFetcher.state === 'submitting'
             ? 'Searching...'
             : 'Find your invitation'}
         </Button>
 
-        {guest.data && (guest.data as { guest: Guest })?.guest && (
+        {guestInfo && (
           <>
             <div className="mt-6 text-center">
               <Text size="md">We found your invite!</Text>
               <br />
-              <Text size="md">
-                {(guest.data as { guest: Guest }).guest.names}
-              </Text>
+              <Text size="md">{guestInfo.names}</Text>
             </div>
             <div className="mt-4">
               <Button
@@ -79,9 +80,7 @@ const RSVPForm = (props: Props) => {
                 color="green-dark"
                 style={{ width: '100%' }}
               >
-                <Link to={`/rsvp/${(guest.data as { guest: Guest }).guest.id}`}>
-                  Continue
-                </Link>
+                <Link to={`/rsvp/${guestInfo.id}`}>Continue</Link>
               </Button>
               <div className="text-center mt-4">
                 <Text size="sm">
@@ -93,7 +92,7 @@ const RSVPForm = (props: Props) => {
           </>
         )}
       </div>
-    </guest.Form>
+    </guestFetcher.Form>
   )
 }
 

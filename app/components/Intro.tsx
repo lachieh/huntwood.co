@@ -1,16 +1,15 @@
 import { motion, MotionProps } from 'framer-motion'
+import { useLocation } from 'remix'
 
 type Props = {}
 
 const Intro = (props: Props) => {
-  const windowWidth =
-    typeof window !== 'undefined'
-      ? window?.innerWidth ?? document?.body?.clientWidth
-      : null
-  const windowHeight =
-    typeof window !== 'undefined'
-      ? window?.innerHeight ?? document?.body?.clientHeight
-      : null
+  const ssr = typeof window === 'undefined'
+  const notHome = useLocation().pathname !== '/'
+  if (ssr && notHome) return null
+
+  const windowWidth = ssr ? null : window?.innerWidth
+  const windowHeight = ssr ? null : window?.innerHeight
 
   const baseAnimationProps = {
     transition: {
@@ -51,10 +50,14 @@ const Intro = (props: Props) => {
 
   return (
     <motion.div
-      initial={{
-        height: windowHeight ? `${windowHeight}px` : '100vh',
-        visibility: 'visible',
-      }}
+      initial={
+        notHome
+          ? { height: '64px', visibility: 'hidden' }
+          : {
+              height: windowHeight ? `${windowHeight}px` : '100vh',
+              visibility: 'visible',
+            }
+      }
       animate={{ height: '64px', visibility: 'hidden' }}
       transition={{
         duration: 1,
