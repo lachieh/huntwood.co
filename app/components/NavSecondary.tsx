@@ -1,7 +1,8 @@
-import { AnimatePresence, motion, MotionProps } from 'framer-motion'
-import React from 'react'
+import type { MotionProps } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useMatch } from 'react-router'
-import { Link, NavLink, NavLinkProps } from 'remix'
+import type { NavLinkProps } from 'remix'
+import { NavLink } from 'remix'
 const ActiveLink = ({ children, ...props }: NavLinkProps) => {
   return (
     <NavLink

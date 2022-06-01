@@ -1,4 +1,5 @@
-import { json, LoaderFunction } from 'remix'
+import type { LoaderFunction } from 'remix'
+import { json } from 'remix'
 
 export type Guest = GuestSuccess | GuestError
 

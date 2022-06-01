@@ -2,9 +2,10 @@ import React, { useEffect, useRef, useState } from 'react'
 import Text from '~/components/Text'
 import Card from '~/components/Card'
 import Button from '~/components/Button'
-import RSVPForm from '~/components/RSVPForm'
-import { Link, LoaderFunction, useLocation } from 'remix'
+import RSVPLookup from '~/components/RSVPLookup'
+import { Link, useLocation } from 'remix'
 import { rsvpToken } from '~/cookies'
+import type { LoaderFunction } from 'remix'
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const cookieHeader = request.headers.get('Cookie')
@@ -65,7 +66,7 @@ export default function Index() {
             >
               X
             </button>
-            <RSVPForm />
+            <RSVPLookup />
           </>
         }
       />

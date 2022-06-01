@@ -1,18 +1,18 @@
 import { useRef, useState } from 'react'
 import { useFetcher } from 'remix'
-import { Song } from '~/routes/api/song'
+import type { Song } from '~/routes/api/song'
 import Text from '~/components/Text'
 
 type Props = {
   onChange: (songs: Song[]) => void
+  value?: Song[]
 }
 
 const responseIsValid = (data: Song[] | { error: string }): data is Song[] => {
   return !(data as { error: string }).error
 }
 
-const SpotifyField = ({ onChange }: Props) => {
-  const [selectedSongs, setSelectedSongs] = useState<Song[]>([])
+const SpotifyField = ({ onChange, value = [] }: Props) => {
   const [currentSearchTerm, setCurrentSearchTerm] = useState('')
   const ref = useRef<number>()
   const songs = useFetcher<Song[] | { error: string }>()
@@ -28,15 +28,14 @@ const SpotifyField = ({ onChange }: Props) => {
   }
 
   const getNewSongs = (song: Song) => {
-    if (selectedSongs.includes(song)) {
-      return selectedSongs.filter((s) => s.uri !== song.uri)
+    if (value.includes(song)) {
+      return value.filter((s) => s.uri !== song.uri)
     }
-    return [...selectedSongs, song]
+    return [...value, song]
   }
 
   const toggleSelection = (song: Song) => {
     const newSongs = getNewSongs(song)
-    setSelectedSongs(newSongs)
     onChange(newSongs)
   }
 
@@ -96,7 +95,7 @@ const SpotifyField = ({ onChange }: Props) => {
               {songs.data
                 .slice(0, 3)
                 .map((song) =>
-                  !selectedSongs.includes(song) ? (
+                  !value.includes(song) ? (
                     <SongCard key={song.uri} song={song} selected={false} />
                   ) : null,
                 )}
@@ -105,12 +104,14 @@ const SpotifyField = ({ onChange }: Props) => {
         ) : (
           'Something went wrong, try a different search'
         ))}
-      <div className="flex flex-col">
-        <Text>Selected Songs</Text>
-        {selectedSongs.map((song) => (
-          <SongCard key={song.uri} song={song} selected={true} />
-        ))}
-      </div>
+      {value?.length > 0 && (
+        <div className="flex flex-col">
+          <Text>Selected Songs</Text>
+          {value.map((song) => (
+            <SongCard key={song.uri} song={song} selected={true} />
+          ))}
+        </div>
+      )}
     </songs.Form>
   )
 }

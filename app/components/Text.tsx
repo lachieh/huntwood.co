@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from 'react'
+import type { PropsWithChildren } from 'react'
 
 type Props = {
   as?: keyof JSX.IntrinsicElements

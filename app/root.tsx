@@ -1,20 +1,13 @@
-import {
-  Links,
-  LinksFunction,
-  LiveReload,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-} from 'remix'
-import type { MetaFunction } from 'remix'
+import { Links, LiveReload, Meta, Scripts, ScrollRestoration } from 'remix'
+import type { MetaFunction, LinksFunction } from 'remix'
 import tailwindStyles from './styles/tailwind.css'
 import fontStyles from './styles/fonts.css'
 import Nav from '~/components/Nav'
 import Intro from '~/components/Intro'
 import HeroImage from '~/components/HeroImage'
 import NavSecondary from './components/NavSecondary'
-import { AnimatePresence, MotionProps, motion } from 'framer-motion'
+import type { MotionProps } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useLocation } from 'remix'
 import { useOutlet } from 'react-router'
 

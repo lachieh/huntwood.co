@@ -1,9 +1,10 @@
-import React, { PropsWithChildren } from 'react'
+import type { PropsWithChildren } from 'react'
 import topLeft from '~/images/corner-top-left.svg'
 import topRight from '~/images/corner-top-right.svg'
 import flourishLeft from '~/images/flourish-left.svg'
 import flourishRight from '~/images/flourish-right.svg'
-import { motion, MotionProps } from 'framer-motion'
+import type { MotionProps } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 type Props = {
   flourish?: boolean

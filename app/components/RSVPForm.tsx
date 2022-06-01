@@ -1,98 +1,68 @@
-import { Link } from 'react-router-dom'
-import {
-  Form,
-  useActionData,
-  useFetcher,
-  useLoaderData,
-  useTransition,
-} from 'remix'
+import { useState } from 'react'
+import { useFetcher } from 'remix'
+import type { Song } from '~/routes/api/song'
 import Button from '~/components/Button'
-import Text from '~/components/Text'
+import SpotifyField from '~/components/SpotifyField'
 import type { Guest } from '~/routes/rsvp'
 
-type Props = {}
+type Props = {
+  guest: Guest
+  onSuccess: () => void
+}
 
-const RSVPForm = (props: Props) => {
-  const guestFetcher = useFetcher<{ guest: Guest } | { error: string }>()
-  const existingGuest = (useLoaderData() as Guest | undefined) || undefined
-  const guestInfo =
-    (guestFetcher.data as { guest: Guest })?.guest ?? existingGuest
-  const guestError = (guestFetcher?.data as { error: string })?.error
+type RSVP = {
+  // name	email	phone	attending	shuttle bus	dietary	message	songs
+  names: string
+  email: string
+  phone: string
+  attending: boolean
+  shuttle: boolean
+  dietary: string
+  message: string
+  songs: Song[]
+}
+
+const RSVPForm = ({ guest }: Props) => {
+  const rsvp = useFetcher<RSVP>()
+  const [data, setData] = useState<RSVP>()
+
+  const handleSubmit = () => {
+    fetch(`/rsvp/${guest.id}`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setData(undefined)
+        }
+      })
+  }
+
+  const handleChange = (name: string, value: any) => {
+    setData({
+      ...(data as RSVP),
+      [name]: value,
+    })
+  }
 
   return (
-    <guestFetcher.Form
-      className="flex flex-col justify-center items-center w-full max-w-xs"
-      method="post"
-      action="/rsvp"
-    >
-      <br />
-      <div className="text-white">
-        <div className="mb-4">
-          <div className="text-center">
-            <Text as="h2" size="lg">
-              RSVP
-            </Text>
-          </div>
-          <Text>
-            If you're responding for you and a guest (or your family), you'll be
-            able to RSVP for your entire group.
-          </Text>
-        </div>
-        <label className="flex flex-col mb-4 w-full">
-          <Text size="sm">Your Name</Text>
-          <input
-            name="name"
-            required
-            defaultValue={existingGuest?.names || ''}
-            className="text-copy px-4 py-2 mt-1 w-full outline-offset-2 outline-2 outline-green-light focus-visible:[outline-style:solid]"
-          />
-        </label>
-        {guestError === 'Guest not found' && (
-          <div className="mb-4">
-            <Text size="sm">
-              Uh oh! We can&rsquo;t find your invite. Give it another go with
-              the name on your invite or contact Mitchell or Natalie.
-            </Text>
-          </div>
-        )}
-        <Button
-          variant="solid"
-          color="green-light"
-          type="submit"
-          style={{ width: '100%' }}
-          disabled={guestFetcher.state === 'submitting'}
-        >
-          {guestFetcher.state === 'submitting'
-            ? 'Searching...'
-            : 'Find your invitation'}
-        </Button>
-
-        {guestInfo && (
-          <>
-            <div className="mt-6 text-center">
-              <Text size="md">We found your invite!</Text>
-              <br />
-              <Text size="md">{guestInfo.names}</Text>
-            </div>
-            <div className="mt-4">
-              <Button
-                variant="solid"
-                color="green-dark"
-                style={{ width: '100%' }}
-              >
-                <Link to={`/rsvp/${guestInfo.id}`}>Continue</Link>
-              </Button>
-              <div className="text-center mt-4">
-                <Text size="sm">
-                  Not you? Try again with the name on your invite or contact
-                  Mitchell or Natalie.
-                </Text>
-              </div>
-            </div>
-          </>
-        )}
-      </div>
-    </guestFetcher.Form>
+    <>
+      <SpotifyField
+        value={data?.songs || []}
+        onChange={(songs) => handleChange('songs', songs)}
+      />
+      <Button
+        variant="solid"
+        color="green-light"
+        type="submit"
+        style={{ width: '100%' }}
+        disabled={rsvp.state === 'submitting'}
+        onClick={() => handleSubmit()}
+      >
+        {rsvp.state === 'submitting' ? 'Submitting...' : 'Submit'}
+      </Button>
+    </>
   )
 }
 
