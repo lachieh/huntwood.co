@@ -8,7 +8,7 @@ import {
 } from 'remix'
 import Button from '~/components/Button'
 import Text from '~/components/Text'
-import { Guest } from '~/routes/rsvp'
+import type { Guest } from '~/routes/rsvp'
 
 type Props = {}
 
@@ -43,7 +43,7 @@ const RSVPForm = (props: Props) => {
           <input
             name="name"
             required
-            value={existingGuest?.names}
+            defaultValue={existingGuest?.names || ''}
             className="text-copy px-4 py-2 mt-1 w-full outline-offset-2 outline-2 outline-green-light focus-visible:[outline-style:solid]"
           />
         </label>
