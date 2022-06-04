@@ -4,19 +4,21 @@ type Props = {
   as?: keyof JSX.IntrinsicElements
   size?: 'sm' | 'md' | 'lg'
   color?:
-    | 'green-dark'
-    | 'green-mid'
-    | 'green-light'
-    | 'blue-light'
-    | 'blue-mid'
-    | 'blue-dark'
-    | 'white'
-    | 'copy'
+    | 'text-green-dark'
+    | 'text-green-mid'
+    | 'text-green-light'
+    | 'text-blue-light'
+    | 'text-blue-mid'
+    | 'text-blue-dark'
+    | 'text-white'
+    | 'text-copy'
+  className?: string
 }
 
 const Text = ({
   as = 'span',
   size = 'md',
+  className = '',
   color,
   children,
 }: PropsWithChildren<Props>) => {
@@ -30,9 +32,7 @@ const Text = ({
   const extraClasses = size === 'lg' ? 'uppercase tracking-widest' : ''
 
   return (
-    <Tag
-      className={`${color ? 'text-' + color : ''} ${textSize} ${extraClasses}`}
-    >
+    <Tag className={`${color ?? ''} ${textSize} ${extraClasses} ${className}`}>
       {children}
     </Tag>
   )

@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { useFetcher } from 'remix'
 import type { Song } from '~/routes/api/song'
 import Text from '~/components/Text'
+import Input from './Input'
 
 type Props = {
   onChange: (songs: Song[]) => void
@@ -15,6 +16,7 @@ const responseIsValid = (data: Song[] | { error: string }): data is Song[] => {
 const SpotifyField = ({ onChange, value = [] }: Props) => {
   const [currentSearchTerm, setCurrentSearchTerm] = useState('')
   const ref = useRef<number>()
+  const formRef = useRef<HTMLFormElement>(null)
   const songs = useFetcher<Song[] | { error: string }>()
 
   const handleSearch = (form: HTMLFormElement | null) => {
@@ -71,15 +73,11 @@ const SpotifyField = ({ onChange, value = [] }: Props) => {
   }
 
   return (
-    <songs.Form action="/api/song" method="get">
+    <songs.Form action="/api/song" method="get" ref={formRef}>
       <div className="flex flex-col">
         <label className="flex flex-col mb-4 w-full">
-          <Text size="sm">Search for a song</Text>
-          <input
-            name="q"
-            className="text-copy px-4 py-2 mt-1 w-full outline-offset-2 outline-2 outline-green-light focus-visible:[outline-style:solid]"
-            onChange={(e) => handleSearch(e.target.form)}
-          />
+          <Text>Search for a song</Text>
+          <Input name="q" onChange={(e) => handleSearch(formRef.current)} />
         </label>
       </div>
       {songs.data &&

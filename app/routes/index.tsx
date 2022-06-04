@@ -3,6 +3,7 @@ import Text from '~/components/Text'
 import Card from '~/components/Card'
 import Button from '~/components/Button'
 import RSVPLookup from '~/components/RSVPLookup'
+import close from '~/images/icon-close.svg'
 import { Link, useLocation } from 'remix'
 import { rsvpToken } from '~/cookies'
 import type { LoaderFunction } from 'remix'
@@ -62,9 +63,9 @@ export default function Index() {
           <>
             <button
               onClick={() => setFlipped(false)}
-              className="font-sans absolute top-4 right-4"
+              className="font-sans absolute top-4 right-4 rounded-full overflow-hidden outline-green-light outline-offset outline-4 focus-visible:[outline-style:solid] transition-[outline-width]"
             >
-              X
+              <img src={close} alt="close" className="w-6 h-6" />
             </button>
             <RSVPLookup />
           </>

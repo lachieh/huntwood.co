@@ -1,6 +1,4 @@
 import type { ButtonHTMLAttributes } from 'react'
-import type { LinkProps } from 'react-router-dom'
-import { Link } from 'react-router-dom'
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: 'sm' | 'md' | 'lg'
@@ -14,8 +12,6 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
     | 'white'
     | 'copy'
   variant?: 'solid' | 'outline'
-  link?: boolean
-  to?: string
 }
 // this is here to make sure purge-css doesn't remove the button colors
 // [--button-color:blue-dark]
@@ -37,8 +33,6 @@ const Button = ({
   color = 'blue-dark',
   variant = 'outline',
   children,
-  link = false,
-  to = '',
   ...props
 }: Props) => {
   const buttonColor = {
@@ -59,19 +53,6 @@ const Button = ({
       'text-white hover:text-[color:var(--button-color)] rounded border border-[color:var(--button-color)] bg-[color:var(--button-color)] hover:bg-white',
   }[variant]
   const outline = `outline-offset outline-4 outline-${color}/50 focus-visible:[outline-style:solid] transition-[outline-width]`
-
-  if (link) {
-    return (
-      <Link
-        className={`${buttonColor} ${buttonStyle} ${outline} block text-center pt-1 pb-2 px-5 transition-colors`}
-        {...(props as LinkProps)}
-        to={to}
-      >
-        {children}
-      </Link>
-    )
-  }
-
   return (
     <button
       className={`${buttonColor} ${buttonStyle} ${outline} pt-1 pb-2 px-5 transition-colors`}

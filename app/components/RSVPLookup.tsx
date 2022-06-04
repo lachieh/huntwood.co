@@ -3,6 +3,7 @@ import { useFetcher, useLoaderData } from 'remix'
 import Button from '~/components/Button'
 import Text from '~/components/Text'
 import type { Guest } from '~/routes/rsvp'
+import Input from '~/components/Input'
 
 type Props = {}
 
@@ -34,11 +35,11 @@ const RSVPForm = (props: Props) => {
         </div>
         <label className="flex flex-col mb-4 w-full">
           <Text size="sm">Your Name</Text>
-          <input
+          <Input
             name="name"
             required
+            bg="dark"
             defaultValue={existingGuest?.names || ''}
-            className="text-copy px-4 py-2 mt-1 w-full outline-offset-2 outline-2 outline-green-light focus-visible:[outline-style:solid]"
           />
         </label>
         {guestError === 'Guest not found' && (
@@ -73,8 +74,10 @@ const RSVPForm = (props: Props) => {
                 variant="solid"
                 color="green-dark"
                 style={{ width: '100%' }}
+                to={`/rsvp/${guestInfo.id}`}
+                link
               >
-                <Link to={`/rsvp/${guestInfo.id}`}>Continue</Link>
+                Continue
               </Button>
               <div className="text-center mt-4">
                 <Text size="sm">
