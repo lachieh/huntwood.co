@@ -76,7 +76,7 @@ const SpotifyField = ({ onChange, value = [] }: Props) => {
     <songs.Form action="/api/song" method="get" ref={formRef}>
       <div className="flex flex-col">
         <label className="flex flex-col mb-4 w-full">
-          <Text>Search for a song</Text>
+          <Text>Search Spotify</Text>
           <Input name="q" onChange={(e) => handleSearch(formRef.current)} />
         </label>
       </div>
