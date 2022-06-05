@@ -1,6 +1,6 @@
+import type { Song } from '../routes/api/song'
+import type { Guest, RSVPData } from '~/routes/rsvp'
 import { google } from 'googleapis'
-import { Guest, RSVPData } from '~/routes/rsvp'
-import { Song } from '../routes/api/song'
 
 export interface GoogleApiKey {
   private_key: string
@@ -50,13 +50,26 @@ export const getGuests = async (): Promise<Guest[]> => {
 export const addRsvp = async (data: RSVPData): Promise<number> => {
   try {
     const sheets = await getSheetsApi()
-    const { name, email, phone, dietary, message } = data
+    const { names, email, phone, attending, shuttle, dietary, message, songs } =
+      data
     const response = await sheets.spreadsheets.values.append({
       spreadsheetId: SHEET_ID,
       range: 'RSVPs!A2:B',
       valueInputOption: 'USER_ENTERED',
       requestBody: {
-        values: [[new Date(), name, email, phone, dietary, message]],
+        values: [
+          [
+            new Date(),
+            names,
+            email,
+            phone,
+            attending,
+            shuttle,
+            dietary,
+            message,
+            songs,
+          ],
+        ],
       },
     })
     return response.status

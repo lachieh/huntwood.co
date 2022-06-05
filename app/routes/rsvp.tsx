@@ -1,8 +1,10 @@
+import type { ActionFunction } from 'remix'
+import type { Song } from '~/routes/api/song'
 import React, { useEffect } from 'react'
 import { Outlet, useNavigate, useParams } from 'react-router'
-import { ActionFunction, json } from 'remix'
-import { getGuests } from '../utils/sheetsService'
+import { json } from 'remix'
 import { rsvpToken } from '~/cookies'
+import { getGuests } from '~/utils/sheetsService'
 
 export interface Guest {
   id: string
@@ -11,12 +13,14 @@ export interface Guest {
 }
 
 export interface RSVPData {
-  name: string
+  names: string
   email: string
   phone: string
-  attending: boolean
+  attending: number
+  shuttle: boolean
   dietary: string
   message: string
+  songs: Song[]
 }
 
 type Props = {}

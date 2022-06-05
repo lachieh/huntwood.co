@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react'
-import Text from '~/components/Text'
-import Card from '~/components/Card'
-import Button from '~/components/Button'
-import RSVPLookup from '~/components/RSVPLookup'
-import close from '~/images/icon-close.svg'
-import { Link, useLocation } from 'remix'
-import { rsvpToken } from '~/cookies'
 import type { LoaderFunction } from 'remix'
+import React, { useEffect, useRef, useState } from 'react'
+import { Link, useLocation } from 'remix'
+import Button from '~/components/Button'
+import Card from '~/components/Card'
+import RSVPLookup from '~/components/RSVPLookup'
+import Text from '~/components/Text'
+import { rsvpToken } from '~/cookies'
+import close from '~/images/icon-close.svg'
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const cookieHeader = request.headers.get('Cookie')

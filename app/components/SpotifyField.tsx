@@ -1,8 +1,8 @@
+import type { Song } from '~/routes/api/song'
 import { useRef, useState } from 'react'
 import { useFetcher } from 'remix'
-import type { Song } from '~/routes/api/song'
+import Input from '~/components/Input'
 import Text from '~/components/Text'
-import Input from './Input'
 
 type Props = {
   onChange: (songs: Song[]) => void

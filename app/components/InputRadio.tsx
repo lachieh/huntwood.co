@@ -1,5 +1,5 @@
-import { oneLine } from 'common-tags'
 import type { HTMLProps } from 'react'
+import { oneLine } from 'common-tags'
 
 interface Props extends HTMLProps<HTMLInputElement> {
   bg?: 'light' | 'dark'

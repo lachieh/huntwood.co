@@ -1,12 +1,10 @@
-import { useState } from 'react'
 import type { ActionFunction, LoaderFunction } from 'remix'
+import type { Guest } from '~/routes/rsvp'
 import { json } from 'remix'
-import { redirect } from 'remix'
 import { useLoaderData } from 'remix'
 import Card from '~/components/Card'
 import RSVPForm from '~/components/RSVPForm'
 import { rsvpToken } from '~/cookies'
-import type { Guest } from '~/routes/rsvp'
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const cookieHeader = request.headers.get('Cookie')

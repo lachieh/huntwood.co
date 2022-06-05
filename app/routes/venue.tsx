@@ -1,5 +1,5 @@
 import Card from '~/components/Card'
-import { Markdown } from '../components/Markdown'
+import { Markdown } from '~/components/Markdown'
 
 export default function Venue() {
   return (

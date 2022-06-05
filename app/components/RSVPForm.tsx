@@ -1,34 +1,22 @@
+import type { Song } from '~/routes/api/song'
+import type { Guest, RSVPData } from '~/routes/rsvp'
 import { useRef, useState } from 'react'
 import { useFetcher } from 'remix'
-import type { Song } from '~/routes/api/song'
 import Button from '~/components/Button'
+import Input from '~/components/Input'
+import InputCheckbox from '~/components/InputCheckbox'
+import InputRadio from '~/components/InputRadio'
 import SpotifyField from '~/components/SpotifyField'
-import type { Guest } from '~/routes/rsvp'
 import Text from '~/components/Text'
-import Input from './Input'
-import InputCheckbox from './InputCheckbox'
-import Textarea from './Textarea'
-import InputRadio from './InputRadio'
+import Textarea from '~/components/Textarea'
 
 type Props = {
   guest: Guest
   onSuccess: () => void
 }
 
-type RSVP = {
-  // name	email	phone	attending	shuttle bus	dietary	message	songs
-  names: string
-  email: string
-  phone: string
-  attending: number
-  shuttle: boolean
-  dietary: string
-  message: string
-  songs: Song[]
-}
-
 const RSVPForm = ({ guest }: Props) => {
-  const rsvp = useFetcher<RSVP>()
+  const rsvp = useFetcher<RSVPData>()
   const [songs, setSongs] = useState<Song[]>()
   const many = guest.guests > 1
   const pronoun = many ? 'We' : 'I'
@@ -37,7 +25,7 @@ const RSVPForm = ({ guest }: Props) => {
   const handleSubmit = () => {
     if (!formRef.current) return
     const formData = new FormData(formRef.current)
-    const submission: RSVP = {
+    const submission: RSVPData = {
       names: guest.names,
       email: (formData.get('email') as string) || '',
       phone: (formData.get('phone') as string) || '',

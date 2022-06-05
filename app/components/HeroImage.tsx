@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import hero from '../images/hero.jpg'
+import hero from '~/images/hero.jpg'
 
 type Props = {
   fade?: boolean

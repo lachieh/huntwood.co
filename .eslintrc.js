@@ -7,4 +7,25 @@ module.exports = {
     '@remix-run/eslint-config/node',
     'plugin:prettier/recommended',
   ],
+  rules: {
+    'import/order': [
+      'error',
+      {
+        groups: [
+          'type',
+          'builtin',
+          'external',
+          'parent',
+          'internal',
+          'object',
+          'sibling',
+          'index',
+        ],
+        alphabetize: {
+          order: 'asc',
+          caseInsensitive: true,
+        },
+      },
+    ],
+  },
 }

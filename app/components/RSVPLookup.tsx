@@ -1,9 +1,8 @@
-import { Link } from 'react-router-dom'
+import type { Guest } from '~/routes/rsvp'
 import { useFetcher, useLoaderData } from 'remix'
 import Button from '~/components/Button'
-import Text from '~/components/Text'
-import type { Guest } from '~/routes/rsvp'
 import Input from '~/components/Input'
+import Text from '~/components/Text'
 
 type Props = {}
 
