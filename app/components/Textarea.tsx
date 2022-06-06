@@ -1,7 +1,11 @@
-import type { HTMLProps } from 'react'
+import type { DetailedHTMLProps, TextareaHTMLAttributes } from 'react'
 import { oneLine } from 'common-tags'
 
-interface Props extends HTMLProps<HTMLTextAreaElement> {
+interface Props
+  extends DetailedHTMLProps<
+    TextareaHTMLAttributes<HTMLTextAreaElement>,
+    HTMLTextAreaElement
+  > {
   bg?: 'light' | 'dark'
 }
 

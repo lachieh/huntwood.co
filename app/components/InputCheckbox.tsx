@@ -1,7 +1,11 @@
-import type { HTMLProps } from 'react'
+import type { DetailedHTMLProps, InputHTMLAttributes } from 'react'
 import { oneLine } from 'common-tags'
 
-interface Props extends HTMLProps<HTMLInputElement> {
+interface Props
+  extends DetailedHTMLProps<
+    InputHTMLAttributes<HTMLInputElement>,
+    HTMLInputElement
+  > {
   bg?: 'light' | 'dark'
 }
 

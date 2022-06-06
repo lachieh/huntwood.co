@@ -1,3 +1,4 @@
+import type { RSVPData } from '../rsvp'
 import type { ActionFunction, LoaderFunction } from 'remix'
 import type { Guest } from '~/routes/rsvp'
 import { json } from 'remix'
@@ -5,6 +6,7 @@ import { useLoaderData } from 'remix'
 import Card from '~/components/Card'
 import RSVPForm from '~/components/RSVPForm'
 import { rsvpToken } from '~/cookies'
+import { addRsvp, addSongs } from '~/utils/sheetsService'
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const cookieHeader = request.headers.get('Cookie')
@@ -13,8 +15,21 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 }
 
 export const action: ActionFunction = async ({ request, params }) => {
-  console.log(await request.json())
-  return json({ success: true })
+  const submission = JSON.parse(
+    ((await request.formData()).get('json') as string) || '{}',
+  ) as RSVPData
+  const statusCode = await addRsvp(submission)
+  await addSongs(submission.songs, submission.names)
+  if (statusCode === 200) {
+    return json({ success: true })
+  }
+  return json(
+    {
+      ...submission,
+      error: 'Something went wrong, please try again',
+    },
+    500,
+  )
 }
 
 export default function RSVP() {

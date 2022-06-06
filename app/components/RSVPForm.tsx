@@ -1,6 +1,6 @@
 import type { Song } from '~/routes/api/song'
 import type { Guest, RSVPData } from '~/routes/rsvp'
-import { useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useFetcher } from 'remix'
 import Button from '~/components/Button'
 import Input from '~/components/Input'
@@ -17,127 +17,243 @@ type Props = {
 
 const RSVPForm = ({ guest }: Props) => {
   const rsvp = useFetcher<RSVPData>()
+  const initialData = useMemo(
+    () => ({
+      names: guest?.names,
+      email: '',
+      phone: '',
+      guest1Attending: undefined,
+      guest2Attending: undefined,
+      shuttle: false,
+      dietary: '',
+      message: '',
+      songs: [],
+    }),
+    [guest],
+  )
+  const [data, setData] = useState<RSVPData>(rsvp.data ?? initialData)
   const [songs, setSongs] = useState<Song[]>()
-  const many = guest.guests > 1
+  const many = !!guest?.guest2
   const pronoun = many ? 'We' : 'I'
-  const formRef = useRef<HTMLFormElement>(null)
+  const allAnswered = many
+    ? typeof data.guest1Attending !== 'undefined' &&
+      typeof data.guest2Attending !== 'undefined'
+    : typeof data.guest1Attending !== 'undefined'
+  const allAttending = many
+    ? data.guest1Attending === true && data.guest2Attending === true
+    : data.guest1Attending === true
+  const someAttending = many
+    ? allAnswered &&
+      (data.guest1Attending === true || data.guest2Attending === true)
+    : data.guest1Attending === true
+  const noneAttending = many
+    ? data.guest1Attending === false && data.guest2Attending === false
+    : data.guest1Attending === false
 
-  const handleSubmit = () => {
-    if (!formRef.current) return
-    const formData = new FormData(formRef.current)
-    const submission: RSVPData = {
-      names: guest.names,
-      email: (formData.get('email') as string) || '',
-      phone: (formData.get('phone') as string) || '',
-      attending: Number(formData.get('guests')) || 0,
-      shuttle: (formData.get('shuttle') as string) === 'true',
-      dietary: (formData.get('dietary') as string) || '',
-      message: (formData.get('message') as string) || '',
-      songs: songs || [],
+  const update = (key: string, value: any) => {
+    setData({ ...data, [key]: value })
+  }
+
+  if (rsvp.data?.success) {
+    if (allAttending || someAttending) {
+      return (
+        <>
+          <p className="text-center">
+            <Text size="lg">Thank you</Text>
+          </p>
+          <Text as="p" size="md" className="text-center">
+            We're looking forward to seeing you there!
+          </Text>
+        </>
+      )
     }
-    fetch(`/rsvp/${guest.id}`, {
-      method: 'POST',
-      body: JSON.stringify(submission),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          setSongs([])
-          formRef.current?.reset()
-        }
-      })
+    if (noneAttending) {
+      return (
+        <>
+          <p className="text-center">
+            <Text size="lg">Thanks</Text>
+          </p>
+          <Text as="p" size="md" className="text-center">
+            We'll miss you on the dance floor!
+          </Text>
+        </>
+      )
+    }
   }
 
   return (
     <>
-      <form ref={formRef}>
-        <p className="text-center">
-          <Text size="lg">{guest.names}</Text>
-        </p>
-        <Text as="p" size="md" className="text-center mb-6">
-          Hi! 👋 We'd love to see you on our special day! Please fill out the
-          form below to RSVP.
+      <p className="text-center">
+        <Text size="lg">{guest?.names}</Text>
+      </p>
+      <Text as="p" size="md" className="text-center mb-6">
+        Hi! 👋 We'd love to see you on our special day! Please fill out the form
+        below to RSVP.
+      </Text>
+      <div className="flex flex-col">
+        <Text as="p" size="md" className="mb-4">
+          Who is attending?
         </Text>
-        {many ? (
-          <div>
-            <Text as="p" size="md">
-              How many guests from your party are coming?
-            </Text>
-            {Array(guest.guests)
-              .fill(0)
-              .map((_, i) => (
-                <label
-                  key={i}
-                  className="inline-flex flex-row mb-6 items-center"
-                >
-                  <InputRadio name="guests" value={i + 1} />
-                  <Text size="md" className="ml-2 mr-4">
-                    {i + 1}
-                  </Text>
-                </label>
-              ))}
-          </div>
-        ) : (
-          <label className="inline-flex flex-row mb-6 items-center">
-            <InputCheckbox name="guests" value="1" />
-            <Text size="md" className="ml-2">
-              I will be attending
-            </Text>
-          </label>
-        )}
-        <label className="inline-flex flex-row mb-6 items-center">
-          <InputCheckbox name="shuttle" value="true" />
-          <Text size="md" className="ml-2">
-            {pronoun} will require use of the shuttle bus from the parking lot
-            to the venue
+        <div className="flex flex-row">
+          <Text size="md" className="mr-4">
+            {guest?.guest1}
           </Text>
-        </label>
-        <div className="md:grid md:grid-cols-2 md:gap-4">
-          <label className="flex flex-col mb-6 w-full">
-            <Text size="md">Contact Phone</Text>
-            <Input name="phone" autoComplete="home tel-national" required />
-          </label>
-          <label className="flex flex-col mb-6 w-full">
-            <Text size="md">Email Address</Text>
-            <Input
-              name="email"
-              type="email"
-              required
-              autoComplete="home email"
+          <label className="inline-flex flex-row mb-6 items-center">
+            <InputRadio
+              name="guest1Attending"
+              onChange={(e) =>
+                update(
+                  'guest1Attending',
+                  (e.target as HTMLInputElement).value === 'true',
+                )
+              }
+              value="true"
             />
+            <Text size="md" className="ml-2 mr-4">
+              Yes
+            </Text>
+          </label>
+          <label className="inline-flex flex-row mb-6 items-center">
+            <InputRadio
+              name="guest1Attending"
+              onChange={(e) =>
+                update(
+                  'guest1Attending',
+                  (e.target as HTMLInputElement).value === 'true',
+                )
+              }
+              value="false"
+            />
+            <Text size="md" className="ml-2 mr-4">
+              No
+            </Text>
           </label>
         </div>
-        <label className="flex flex-col mb-6 w-full">
-          <Text size="md">
-            {many ? 'Does anyone' : 'Do you'} have any dietary restrictions?{' '}
-            {many && 'Please list per guest.'}
+        {many && (
+          <div className="flex flex-row">
+            <Text size="md" className="mr-4">
+              {guest?.guest2}
+            </Text>
+            <label className="inline-flex flex-row mb-6 items-center">
+              <InputRadio
+                name="guest2Attending"
+                onChange={(e) =>
+                  update(
+                    'guest2Attending',
+                    (e.target as HTMLInputElement).value === 'true',
+                  )
+                }
+                value="true"
+              />
+              <Text size="md" className="ml-2 mr-4">
+                Yes
+              </Text>
+            </label>
+            <label className="inline-flex flex-row mb-6 items-center">
+              <InputRadio
+                name="guest2Attending"
+                onChange={(e) =>
+                  update(
+                    'guest2Attending',
+                    (e.target as HTMLInputElement).value === 'true',
+                  )
+                }
+                value="false"
+              />
+              <Text size="md" className="ml-2 mr-4">
+                No
+              </Text>
+            </label>
+          </div>
+        )}
+      </div>
+      {(allAttending || someAttending) && (
+        <>
+          <label className="inline-flex flex-row mb-6 items-center">
+            <InputCheckbox
+              onChange={(e) => update('shuttle', e.target.value)}
+              value="true"
+            />
+            <Text size="md" className="ml-2">
+              {pronoun} will require use of the shuttle bus from the parking lot
+              to the venue
+            </Text>
+          </label>
+          <div className="md:grid md:grid-cols-2 md:gap-4">
+            <label className="flex flex-col mb-6 w-full">
+              <Text size="md">Contact Phone</Text>
+              <Input
+                onChange={(e) => update('phone', e.target.value)}
+                autoComplete="home tel-national"
+                required
+              />
+            </label>
+            <label className="flex flex-col mb-6 w-full">
+              <Text size="md">Email Address</Text>
+              <Input
+                onChange={(e) => update('email', e.target.value)}
+                type="email"
+                required
+                autoComplete="home email"
+              />
+            </label>
+          </div>
+          <label className="flex flex-col mb-6 w-full">
+            <Text size="md">
+              {many ? 'Does anyone' : 'Do you'} have any dietary restrictions?{' '}
+              {many && 'Please list per guest.'} (optional)
+            </Text>
+            <Textarea onChange={(e) => update('dietary', e.target.value)} />
+          </label>
+          <label className="flex flex-col mb-6 w-full">
+            <Text size="md">
+              Would {many ? 'anyone' : 'you'} like to tell us anything else?
+              (optional)
+            </Text>
+            <Textarea onChange={(e) => update('message', e.target.value)} />
+          </label>
+          <Text as="p" size="md" className="mb-6">
+            One last thing ☝️. If there is a song you would like to hear played
+            on the night, please search for it below. Mitch will curate the list
+            and critique your selections for inclusion on our playlist! 🎶💃🏻🕺🏼
           </Text>
-          <Textarea name="dietary" />
-        </label>
-        <label className="flex flex-col mb-6 w-full">
-          <Text size="md">
-            Would {many ? 'anyone' : 'you'} like to tell us anything else?
-            (optional)
+          <SpotifyField
+            value={songs || []}
+            onChange={(songs) => setSongs(songs)}
+          />
+        </>
+      )}
+      {noneAttending && (
+        <>
+          <Text as="p" size="md" className="mb-6">
+            Thanks for letting us know. We'd still love if you could contribute
+            to our day 🤗 so if there is a song you would like us to play on the
+            night, please search for it below. 🎶💃🏻🕺🏼
           </Text>
-          <Textarea name="message" />
-        </label>
-      </form>
-      <Text as="p" size="md" className="mb-6">
-        One last thing ☝️. If there is a song you would like to hear played on
-        the night, please search for it below. Mitch will curate the list and
-        critique your selections for inclusion on our playlist! 🎶💃🏻🕺🏼
-      </Text>
-      <SpotifyField value={songs || []} onChange={(songs) => setSongs(songs)} />
-      <Button
-        variant="solid"
-        color="green-light"
-        type="submit"
-        style={{ width: '100%' }}
-        disabled={rsvp.state === 'submitting'}
-        onClick={() => handleSubmit()}
-      >
-        {rsvp.state === 'submitting' ? 'Submitting...' : 'Submit'}
-      </Button>
+          <SpotifyField
+            value={songs || []}
+            onChange={(songs) => setSongs(songs)}
+          />
+        </>
+      )}
+      {allAnswered && (
+        <rsvp.Form action={`/rsvp/${guest?.id}`} method="post">
+          <input
+            type="hidden"
+            name="json"
+            value={JSON.stringify({ ...data, songs })}
+          />
+          <Button
+            variant="solid"
+            color="green-light"
+            type="submit"
+            style={{ width: '100%' }}
+            disabled={!allAnswered || rsvp.state === 'submitting'}
+          >
+            {rsvp.state === 'submitting' ? 'Submitting...' : 'Submit'}
+          </Button>
+        </rsvp.Form>
+      )}
     </>
   )
 }

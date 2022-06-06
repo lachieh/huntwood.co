@@ -1,6 +1,6 @@
 import type { ActionFunction } from 'remix'
 import type { Song } from '~/routes/api/song'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { Outlet, useNavigate, useParams } from 'react-router'
 import { json } from 'remix'
 import { rsvpToken } from '~/cookies'
@@ -9,18 +9,22 @@ import { getGuests } from '~/utils/sheetsService'
 export interface Guest {
   id: string
   names: string
-  guests: number
+  guest1: string
+  guest2?: string
 }
 
 export interface RSVPData {
   names: string
   email: string
   phone: string
-  attending: number
+  guest1Attending?: boolean
+  guest2Attending?: boolean
   shuttle: boolean
   dietary: string
   message: string
   songs: Song[]
+  success?: boolean
+  error?: string
 }
 
 type Props = {}
@@ -34,11 +38,12 @@ export const action: ActionFunction = async ({ request }) => {
     if (!name) return json({ error: 'name is required' }, 400)
 
     const guests = await getGuests()
-    const guest = guests.find((g) => g.names.toLowerCase().includes(name))
-    if (!guest) return json({ error: 'Guest not found' }, 404)
-    cookie.rsvpToken = guest
+    const found = guests.filter((g) => g.names.toLowerCase().includes(name))
+    if (found.length === 0) return json({ error: 'Guest not found' }, 404)
+    if (found.length > 1) return json({ error: 'Name not unique' }, 400)
+    cookie.rsvpToken = found[0]
     return json(
-      { success: true, guest },
+      { success: true, guest: found[0] },
       {
         headers: { 'Set-Cookie': await rsvpToken.serialize(cookie) },
         status: 200,

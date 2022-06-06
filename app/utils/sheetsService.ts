@@ -1,6 +1,7 @@
-import type { Song } from '../routes/api/song'
+import type { Song } from '~/routes/api/song'
 import type { Guest, RSVPData } from '~/routes/rsvp'
 import { google } from 'googleapis'
+import * as spotify from '~/utils/spotify'
 
 export interface GoogleApiKey {
   private_key: string
@@ -32,7 +33,7 @@ const getSheetData = async () => {
   const sheets = await getSheetsApi()
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId: SHEET_ID,
-    range: "'Invite List'!A2:C",
+    range: "'Invite List'!A2:E",
   })
   return res.data.values as string[][]
 }
@@ -42,7 +43,9 @@ export const getGuests = async (): Promise<Guest[]> => {
   const guests = data.map((row) => ({
     id: row[0] || '',
     names: row[1] || '',
-    guests: Number(row[2]) || 0,
+    // guests: Number(row[2]) || 0,
+    guest1: row[3] || '',
+    guest2: row[4] || '',
   }))
   return guests || []
 }
@@ -50,11 +53,19 @@ export const getGuests = async (): Promise<Guest[]> => {
 export const addRsvp = async (data: RSVPData): Promise<number> => {
   try {
     const sheets = await getSheetsApi()
-    const { names, email, phone, attending, shuttle, dietary, message, songs } =
-      data
+    const {
+      names,
+      email,
+      phone,
+      guest1Attending,
+      guest2Attending,
+      shuttle,
+      dietary,
+      message,
+    } = data
     const response = await sheets.spreadsheets.values.append({
       spreadsheetId: SHEET_ID,
-      range: 'RSVPs!A2:B',
+      range: 'RSVPs!A2:I',
       valueInputOption: 'USER_ENTERED',
       requestBody: {
         values: [
@@ -63,35 +74,44 @@ export const addRsvp = async (data: RSVPData): Promise<number> => {
             names,
             email,
             phone,
-            attending,
+            guest1Attending,
+            guest2Attending,
             shuttle,
             dietary,
             message,
-            songs,
           ],
         ],
       },
     })
     return response.status
   } catch (e) {
+    console.error(e)
     return 500
   }
 }
 
-export const addSong = async (song: Song, guestId: string): Promise<number> => {
+export const addSongs = async (
+  songs: Song[],
+  guest: string,
+): Promise<number> => {
   try {
     const sheets = await getSheetsApi()
-    const { name, artists, uri } = song
+    const values = songs.map((song) => [
+      spotify.getSheetsLink(song, true),
+      song.artists.join(', '),
+      song.album,
+      guest,
+    ])
+    console.log(values)
     const response = await sheets.spreadsheets.values.append({
       spreadsheetId: SHEET_ID,
-      range: "'Playlist Songs'!A2:B",
+      range: "'Playlist Songs'!A2:D",
       valueInputOption: 'USER_ENTERED',
-      requestBody: {
-        values: [[new Date(), name, artists, uri, guestId]],
-      },
+      requestBody: { values },
     })
     return response.status
   } catch (e) {
+    console.error(e)
     return 500
   }
 }

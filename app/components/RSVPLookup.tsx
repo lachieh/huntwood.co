@@ -8,7 +8,7 @@ type Props = {}
 
 const RSVPForm = (props: Props) => {
   const guestFetcher = useFetcher<{ guest: Guest } | { error: string }>()
-  const existingGuest = (useLoaderData() as Guest | undefined) || undefined
+  const existingGuest = useLoaderData<Guest | undefined>()
   const guestInfo =
     (guestFetcher.data as { guest: Guest })?.guest ?? existingGuest
   const guestError = (guestFetcher?.data as { error: string })?.error
@@ -28,8 +28,8 @@ const RSVPForm = (props: Props) => {
             </Text>
           </div>
           <Text>
-            If you're responding for you and a guest (or your family), you'll be
-            able to RSVP for your entire group.
+            If you're responding for you and a guest, you'll be able to RSVP for
+            your whole party.
           </Text>
         </div>
         <label className="flex flex-col mb-4 w-full">
@@ -44,8 +44,16 @@ const RSVPForm = (props: Props) => {
         {guestError === 'Guest not found' && (
           <div className="mb-4">
             <Text size="sm">
-              Uh oh! We can&rsquo;t find your invite. Give it another go with
+              Uh oh! We can&rsquo;t find your invite! Give it another go with
               the name on your invite or contact Mitchell or Natalie.
+            </Text>
+          </div>
+        )}
+        {guestError === 'Name not unique' && (
+          <div className="mb-4">
+            <Text size="sm">
+              Looks like we found a few guests with that name. Give it another
+              go with the name on your invite or contact Mitchell or Natalie.
             </Text>
           </div>
         )}
