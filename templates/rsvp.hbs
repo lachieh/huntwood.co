@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New RSVP from {{names}}</title>
+</head>
+<body>
+  <table>
+    <tr>
+      <td><strong>Names</strong></td>
+      <td>{{names}}</td>
+    </tr>
+    <tr>
+      <td><strong>email</strong></td>
+      <td>{{email}}</td>
+    </tr>
+    <tr>
+      <td><strong>phone</strong></td>
+      <td>{{phone}}</td>
+    </tr>
+    <tr>
+      <td><strong>Guest 1 Attending</strong></td>
+      <td>{{#if guest1Attending}}Yes{{else}}No{{/if}}</td>
+    </tr>
+    <tr>
+      <td><strong>Guest 2 Attending</strong></td>
+      <td>{{#if guest2Attending}}Yes{{else}}No{{/if}}</td>
+    </tr>
+    <tr>
+      <td><strong>Needs Shuttle?</strong></td>
+      <td>{{#if shuttle}}Yes{{else}}No{{/if}}</td>
+    </tr>
+    <tr>
+      <td><strong>Dietary Requirements?</strong></td>
+      <td>{{dietary}}</td>
+    </tr>
+    <tr>
+      <td><strong>Message</strong></td>
+      <td>{{message}}</td>
+    </tr>
+    <tr>
+      <td><strong>Songs</strong></td>
+      <td>
+        <ul style="list-style-type: none; margin: 0; padding: 0;">
+        {{#each songs}}
+          <li>
+            <table>
+              <tr>
+                <td><img style="width: 50px; height: auto" src="{{image}}" alt="" /></td>
+                <td>
+                  <strong>{{name}}</strong><br />
+                  {{#each artists}} {{this}}, {{/each}}
+                </td>
+              </tr>
+            </table>
+          </li>
+        {{/each}}
+        </ul>
+        <a href="https://open.spotify.com/playlist/3w6tofcv8p4M9ryTGKukT7?si=ed258d6fb9e04974">Spotify Playlist</a> has been updated.
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

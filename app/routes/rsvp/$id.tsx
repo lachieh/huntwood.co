@@ -1,11 +1,12 @@
-import type { RSVPData } from '../rsvp'
 import type { ActionFunction, LoaderFunction } from 'remix'
+import type { RSVPData } from '~/routes/rsvp'
 import type { Guest } from '~/routes/rsvp'
 import { json } from 'remix'
 import { useLoaderData } from 'remix'
 import Card from '~/components/Card'
 import RSVPForm from '~/components/RSVPForm'
 import { rsvpToken } from '~/cookies'
+import { rsvpTemplate, sendMail } from '~/utils/mailService'
 import { addRsvp, addSongs } from '~/utils/sheetsService'
 import { addSongsToPlaylist } from '~/utils/spotify'
 
@@ -19,9 +20,16 @@ export const action: ActionFunction = async ({ request, params, context }) => {
   const submission = JSON.parse(
     ((await request.formData()).get('json') as string) || '{}',
   ) as RSVPData
+  console.log(typeof submission.guest1Attending, submission.guest1Attending)
   const statusCode = await addRsvp(submission)
   await addSongs(submission.songs, submission.names)
   await addSongsToPlaylist(submission.songs, context.netlifyGraphToken)
+  try {
+    const html = rsvpTemplate(submission)
+    await sendMail(html, 'New RSVP from ' + submission.names)
+  } catch (e) {
+    console.error(e)
+  }
   if (statusCode === 200) {
     return json({ success: true })
   }
