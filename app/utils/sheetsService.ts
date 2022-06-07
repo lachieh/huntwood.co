@@ -70,7 +70,9 @@ export const addRsvp = async (data: RSVPData): Promise<number> => {
       requestBody: {
         values: [
           [
-            new Date().toLocaleString('en-AU'),
+            new Date().toLocaleString('en-AU', {
+              timeZone: 'Australia/Sydney',
+            }),
             names,
             email,
             phone,
