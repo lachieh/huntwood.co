@@ -43,6 +43,9 @@ export default function Index() {
                 Mitchell William Heywood
               </Text>
             </h2>
+            <div className="mb-4">
+              <Button onClick={() => setFlipped(true)}>Click to RSVP</Button>
+            </div>
             <nav className="divide-x divide-copy text-center mb-8">
               <Link className="pt-1 pb-2 px-4 underline " to="/venue">
                 <Text>Venue</Text>
@@ -54,9 +57,6 @@ export default function Index() {
                 <Text>Q + A</Text>
               </Link>
             </nav>
-            <div className="mb-4">
-              <Button onClick={() => setFlipped(true)}>Click to RSVP</Button>
-            </div>
           </div>
         }
         back={

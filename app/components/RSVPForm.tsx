@@ -179,9 +179,12 @@ const RSVPForm = ({ guest }: Props) => {
               to the venue
             </Text>
           </label>
+          <div>
+            <Text size="md">Contact Information (in case of wet weather)</Text>
+          </div>
           <div className="md:grid md:grid-cols-2 md:gap-4">
             <label className="flex flex-col mb-6 w-full">
-              <Text size="md">Contact Phone</Text>
+              <Text size="md">Mobile Number</Text>
               <Input
                 onChange={(e) => update('phone', e.target.value)}
                 autoComplete="home tel-national"
@@ -207,7 +210,7 @@ const RSVPForm = ({ guest }: Props) => {
           </label>
           <label className="flex flex-col mb-6 w-full">
             <Text size="md">
-              Would {many ? 'anyone' : 'you'} like to tell us anything else?
+              Would you like to tell us anything else or leave us a message?
               (optional)
             </Text>
             <Textarea onChange={(e) => update('message', e.target.value)} />
