@@ -7,6 +7,7 @@ import Card from '~/components/Card'
 import RSVPForm from '~/components/RSVPForm'
 import { rsvpToken } from '~/cookies'
 import { addRsvp, addSongs } from '~/utils/sheetsService'
+import { addSongsToPlaylist } from '~/utils/spotify'
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const cookieHeader = request.headers.get('Cookie')
@@ -14,12 +15,13 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   return cookie.rsvpToken ?? null
 }
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action: ActionFunction = async ({ request, params, context }) => {
   const submission = JSON.parse(
     ((await request.formData()).get('json') as string) || '{}',
   ) as RSVPData
   const statusCode = await addRsvp(submission)
   await addSongs(submission.songs, submission.names)
+  await addSongsToPlaylist(submission.songs, context.netlifyGraphToken)
   if (statusCode === 200) {
     return json({ success: true })
   }

@@ -50,7 +50,23 @@ export const verifySignature = (input) => {
   return true
 }
 
-const operationsDoc = `query FindTracks($query: String!) @netlify(id: """ea914478-dc01-4088-8a75-62aee61062e7""", doc: """An example query to start with.""") {
+const operationsDoc = `mutation AddToPlaylist($uris: [String] = []) @netlify(id: """2b7430cf-f3d9-427e-ae7c-3ebdab848a0a""", doc: """An empty mutation to start from""") {
+  spotify {
+    makeRestCall {
+      post(
+        path: "/v1/playlists/3w6tofcv8p4M9ryTGKukT7/tracks"
+        jsonBody: {uris: $uris}
+      ) {
+        jsonBody
+        response {
+          statusCode
+        }
+      }
+    }
+  }
+}
+
+query FindTracks($query: String!) @netlify(id: """ea914478-dc01-4088-8a75-62aee61062e7""", doc: """An example query to start with.""") {
   spotify {
     search(data: {query: $query}) {
       tracks {
@@ -69,6 +85,7 @@ const operationsDoc = `query FindTracks($query: String!) @netlify(id: """ea91447
             url
           }
         }
+        previewUrl
       }
     }
   }
@@ -171,6 +188,15 @@ export const verifyRequestSignature = (request, options) => {
   return verifySignature({ secret, signature, body: body || '' })
 }
 
+export const executeAddToPlaylist = (variables, options) => {
+  return fetchNetlifyGraph({
+    query: operationsDoc,
+    operationName: 'AddToPlaylist',
+    variables: variables,
+    options: options || {},
+  })
+}
+
 export const fetchFindTracks = (variables, options) => {
   return fetchNetlifyGraph({
     query: operationsDoc,
@@ -184,6 +210,10 @@ export const fetchFindTracks = (variables, options) => {
  * The generated NetlifyGraph library with your operations
  */
 const functions = {
+  /**
+   * An empty mutation to start from
+   */
+  executeAddToPlaylist: executeAddToPlaylist,
   /**
    * An example query to start with.
    */

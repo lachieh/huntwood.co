@@ -102,7 +102,6 @@ export const addSongs = async (
       song.album,
       guest,
     ])
-    console.log(values)
     const response = await sheets.spreadsheets.values.append({
       spreadsheetId: SHEET_ID,
       range: "'Playlist Songs'!A2:D",

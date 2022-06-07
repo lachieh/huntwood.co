@@ -23,6 +23,62 @@ export type GraphQLError = {
   extensions: Record<string, unknown>
 }
 
+export type AddToPlaylistInput = {
+  uris?: Array<string>
+}
+
+export type AddToPlaylist = {
+  /**
+   * Any data from the function will be returned here
+   */
+  data: {
+    /**
+     * The root for Spotify mutations
+     */
+    spotify: {
+      /**
+  * Make a REST API call to the Spotify API.
+
+OneGraph will inject the auth params for the API call.
+
+Use this as an escape hatch if OneGraph does not yet support functionality of the underlying API.
+  */
+      makeRestCall: {
+        /**
+         * Make a POST request to the Spotify API. Use this as an escape hatch if OneGraph does not yet support functionality of the underlying API.
+         */
+        post: {
+          /**
+           * The json-encoded body of the HTTP response. If you need the raw body, use `response.rawBody`.
+           */
+          jsonBody: unknown
+          /**
+           * The full response of the API request, including headers and status code.
+           */
+          response: {
+            /**
+             * The HTTP status code of the response
+             */
+            statusCode: number
+          }
+        }
+      }
+    }
+  }
+  /**
+   * Any errors from the function will be returned here
+   */
+  errors: Array<GraphQLError>
+}
+
+/**
+ * An empty mutation to start from
+ */
+export function executeAddToPlaylist(
+  variables: AddToPlaylistInput,
+  options?: NetlifyGraphFunctionOptions,
+): Promise<AddToPlaylist>
+
 export type FindTracksInput = {
   /**
    * The search query's keywords. The search is not case-sensitive: 'roadhouse' will match 'Roadhouse', 'roadHouse', etc. Keywords will be matched in any order unless surrounded by quotes, thus `roadhouse blues` will match both 'Blues Roadhouse' and 'Roadhouse of the Blues'. Quotation marks can be used to limit the match to a phrase: `"roadhouse blues"` will match 'My Roadhouse Blues' but not 'Roadhouse of the Blues'. By default, results are returned when a match is found in any field of the target object type. The asterisk (`*`) character can, with some limitations, be used as a wildcard (maximum: 2 per query). It will match a variable number of non-white-space characters. It cannot be used in a quoted phrase, in a field filter, or as the first character of the keyword string. Searching for playlists will return results matching the playlist's name and/or description.
@@ -92,6 +148,10 @@ export type FindTracks = {
               url: string
             }>
           }
+          /**
+           * A link to a 30 second preview (MP3 format) of the track. Can be null
+           */
+          previewUrl: string
         }>
       }
     }

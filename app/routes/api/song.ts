@@ -8,6 +8,7 @@ export interface Song {
   artists: string[]
   album: string
   image: string
+  previewUrl: string
 }
 
 export const loader: LoaderFunction = async ({ request, context }) => {
@@ -33,6 +34,7 @@ export const loader: LoaderFunction = async ({ request, context }) => {
         artists: song.artists.map((artist) => artist.name),
         album: song.album.name,
         image: song.album.images[0].url,
+        previewUrl: song.previewUrl,
       }),
     ),
     200,
