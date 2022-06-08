@@ -32,7 +32,7 @@ function buildTemplate<T = any>(
   template: string,
 ): HandlebarsTemplateDelegate<T> {
   const templateFile = path.resolve(
-    // load from within .netlif/functions-internal/ folder
+    // load from within .netlify/functions-internal/ folder
     `${__dirname}/../../templates/${template}.hbs`,
   )
   const templateContent = fs.readFileSync(templateFile, 'utf8')

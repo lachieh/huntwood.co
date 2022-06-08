@@ -6,6 +6,9 @@ publish = "public"
 command = "remix watch"
 port = 3000
 
+[functions]
+included_files = ["templates/**"]
+
 [[redirects]]
 from = "/*"
 status = 200
