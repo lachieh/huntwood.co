@@ -1,5 +1,6 @@
 import type { RSVPData } from '../routes/rsvp'
 import * as fs from 'fs'
+import * as path from 'path'
 import FormData from 'form-data'
 import Handlebars from 'handlebars'
 import Mailgun from 'mailgun.js'
@@ -30,7 +31,10 @@ export async function sendMail(html: string, subject: string): Promise<void> {
 function buildTemplate<T = any>(
   template: string,
 ): HandlebarsTemplateDelegate<T> {
-  const templateFile = `./app/templates/${template}.hbs`
+  const templateFile = path.resolve(
+    // load from within .netlif/functions-internal/ folder
+    `${__dirname}/../../templates/${template}.hbs`,
+  )
   const templateContent = fs.readFileSync(templateFile, 'utf8')
   return Handlebars.compile(templateContent)
 }
