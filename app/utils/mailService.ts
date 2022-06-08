@@ -30,7 +30,7 @@ export async function sendMail(html: string, subject: string): Promise<void> {
 function buildTemplate<T = any>(
   template: string,
 ): HandlebarsTemplateDelegate<T> {
-  const templateFile = `${__dirname}/../../templates/${template}.hbs`
+  const templateFile = `../templates/${template}.hbs`
   const templateContent = fs.readFileSync(templateFile, 'utf8')
   return Handlebars.compile(templateContent)
 }
