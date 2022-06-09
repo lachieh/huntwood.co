@@ -18,9 +18,11 @@ export async function addSongsToPlaylist(
   songs: Song[],
   accessToken: string,
 ): Promise<number> {
+  if (!songs.length) return 200
   const response = await netlifyGraph.executeAddToPlaylist(
     { uris: songs.map((song) => song.uri) },
     { accessToken },
   )
+  console.info('added songs to playlist')
   return response.data.spotify.makeRestCall.post.response.statusCode
 }

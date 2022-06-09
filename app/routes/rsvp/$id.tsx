@@ -22,13 +22,24 @@ export const action: ActionFunction = async ({ request, params, context }) => {
   ) as RSVPData
   console.log(typeof submission.guest1Attending, submission.guest1Attending)
   const statusCode = await addRsvp(submission)
-  await addSongs(submission.songs, submission.names)
-  await addSongsToPlaylist(submission.songs, context.netlifyGraphToken)
+  if (submission.songs.length) {
+    try {
+      await addSongs(submission.songs, submission.names)
+    } catch (e) {
+      console.error('Error adding songs to sheet', e)
+    }
+    try {
+      await addSongsToPlaylist(submission.songs, context.netlifyGraphToken)
+    } catch (e) {
+      console.error('Error adding songs to playlist', e)
+    }
+  }
   try {
     const html = rsvpTemplate(submission)
     await sendMail(html, 'New RSVP from ' + submission.names)
+    console.info('Email sent:' + submission.email ?? submission.names)
   } catch (e) {
-    console.error(e)
+    console.error('Failed to send email', e, submission)
   }
   if (statusCode === 200) {
     return json({ success: true })
