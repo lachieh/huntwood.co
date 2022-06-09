@@ -13,12 +13,12 @@
       <td>{{names}}</td>
     </tr>
     <tr>
-      <td><strong>email</strong></td>
-      <td>{{email}}</td>
+      <td><strong>Email Address</strong></td>
+      <td>{{#if email}}<a href="mailto:{{email}}">{{email}}</a>{{else}}None provided{{/if}}</td>
     </tr>
     <tr>
-      <td><strong>phone</strong></td>
-      <td>{{phone}}</td>
+      <td><strong>Phone Number</strong></td>
+      <td>{{#if phone}}<a href="tel:{{phone}}">{{phone}}</a>{{else}}None provided{{/if}}</td>
     </tr>
     <tr>
       <td><strong>Guest 1 Attending</strong></td>
@@ -34,24 +34,27 @@
     </tr>
     <tr>
       <td><strong>Dietary Requirements?</strong></td>
-      <td>{{dietary}}</td>
+      <td>{{#if dietary}}{{dietary}}{{else}}No Dietary Requirements{{/if}}</td>
     </tr>
+    {{#if message}}
     <tr>
       <td><strong>Message</strong></td>
       <td>{{message}}</td>
     </tr>
+    {{/if}}
+    {{#if songs}}
     <tr>
       <td><strong>Songs</strong></td>
       <td>
         <ul style="list-style-type: none; margin: 0; padding: 0;">
         {{#each songs}}
-          <li>
+          <li style="margin: 0 0 10px; padding: 0;">
             <table>
               <tr>
-                <td><img style="width: 50px; height: auto" src="{{image}}" alt="" /></td>
-                <td>
+                <td><img style="width: 45px; display: block; height: auto; margin-right: 6px" src="{{image}}" alt="" /></td>
+                <td class="padding: 0;">
                   <strong>{{name}}</strong><br />
-                  {{#each artists}} {{this}}, {{/each}}
+                  {{#each artists}} {{this}}{{#unless @last}}, {{/unless}}{{/each}}
                 </td>
               </tr>
             </table>
@@ -61,6 +64,7 @@
         <a href="https://open.spotify.com/playlist/3w6tofcv8p4M9ryTGKukT7?si=ed258d6fb9e04974">Spotify Playlist</a> has been updated.
       </td>
     </tr>
+    {{/if}}
   </table>
 </body>
 </html>

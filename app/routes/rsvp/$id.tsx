@@ -21,7 +21,7 @@ export const action: ActionFunction = async ({ request, params, context }) => {
     ((await request.formData()).get('json') as string) || '{}',
   ) as RSVPData
   const statusCode = await addRsvp(submission)
-  if (submission.songs.length) {
+  if (submission.songs?.length) {
     try {
       await addSongs(submission.songs, submission.names)
     } catch (e) {
@@ -36,7 +36,7 @@ export const action: ActionFunction = async ({ request, params, context }) => {
   try {
     const html = rsvpTemplate(submission)
     await sendMail(html, 'New RSVP from ' + submission.names)
-    console.info('Email sent:' + submission.email ?? submission.names)
+    console.info('Email sent:' + submission.email || submission.names)
   } catch (e) {
     console.error('Failed to send email', e, submission)
   }
