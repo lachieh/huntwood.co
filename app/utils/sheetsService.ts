@@ -96,6 +96,7 @@ export const addSongs = async (
   songs: Song[],
   guest: string,
 ): Promise<number> => {
+  if (!songs.length) return 200
   try {
     const sheets = await getSheetsApi()
     const values = songs.map((song) => [
