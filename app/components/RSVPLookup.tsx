@@ -71,6 +71,16 @@ const RSVPForm = (props: Props) => {
 
         {guestInfo && (
           <>
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  FS.identify('${guestInfo.id}', {
+                    displayName: '${guestInfo.names}',
+                    reviewsWritten_int: 14
+                  });
+                `,
+              }}
+            />
             <div className="mt-6 text-center">
               <Text size="md">We found your invite!</Text>
               <br />
