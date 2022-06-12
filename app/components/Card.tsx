@@ -43,7 +43,7 @@ const Card = ({
       <motion.main
         {...frontAnimationProps}
         animate={flipped ? 'hidden' : 'visible'}
-        className="bg-white shadow-xl shadow-black/50 rounded-lg relative"
+        className="bg-white shadow-xl shadow-black/50 rounded-lg relative z-10 [transform-style:preserve-3d] [backface-visibility:hidden]"
       >
         <div
           className={`p-4 ${
@@ -100,7 +100,7 @@ const Card = ({
           backfaceVisibility: 'hidden',
         }}
         animate={flipped ? 'visible' : 'hidden'}
-        className="bg-blue-dark text-white shadow-xl shadow-black/50 rounded-lg absolute top-0 w-full h-full flex flex-col justify-center items-center"
+        className="bg-blue-dark text-white shadow-xl shadow-black/50 rounded-lg absolute top-0 w-full h-full flex flex-col justify-center items-center [transform-style:preserve-3d] [backface-visibility:hidden]"
       >
         <div className="p-4">{back}</div>
       </motion.aside>
