@@ -1,7 +1,13 @@
+import { useEffect } from 'react'
 import Card from '~/components/Card'
 import Text from '~/components/Text'
+import { setPage } from '~/utils/analytics'
 
 export default function Thanks() {
+  useEffect(() => {
+    setPage('Thank You')
+  })
+
   return (
     <div className="mt-8">
       <Card

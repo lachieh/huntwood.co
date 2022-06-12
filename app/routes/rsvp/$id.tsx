@@ -1,19 +1,28 @@
 import type { ActionFunction, LoaderFunction } from 'remix'
 import type { RSVPData } from '~/routes/rsvp'
 import type { Guest } from '~/routes/rsvp'
-import { json } from 'remix'
-import { useLoaderData } from 'remix'
+import { useEffect } from 'react'
+import { redirect, json, useLoaderData } from 'remix'
 import Card from '~/components/Card'
 import RSVPForm from '~/components/RSVPForm'
 import { rsvpToken } from '~/cookies'
+import { setUser, setPage } from '~/utils/analytics'
 import { rsvpTemplate, sendMail } from '~/utils/mailService'
-import { addRsvp, addSongs } from '~/utils/sheetsService'
+import { addRsvp, addSongs, getGuests } from '~/utils/sheetsService'
 import { addSongsToPlaylist } from '~/utils/spotify'
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const cookieHeader = request.headers.get('Cookie')
   const cookie = (await rsvpToken.parse(cookieHeader)) || {}
-  return cookie.rsvpToken ?? null
+  if (cookie.rsvpToken) return json(cookie.rsvpToken)
+  const guests = await getGuests()
+  const found = guests.find((g) => g.id.toLowerCase().includes(params.id ?? ''))
+  cookie.rsvpToken = found
+  if (!found) redirect('/#rsvp')
+  return json(found, {
+    headers: { 'Set-Cookie': await rsvpToken.serialize(cookie) },
+    status: 200,
+  })
 }
 
 export const action: ActionFunction = async ({ request, params, context }) => {
@@ -53,10 +62,14 @@ export const action: ActionFunction = async ({ request, params, context }) => {
 }
 
 export default function RSVP() {
-  const data = useLoaderData<Guest>()
+  const guest = useLoaderData<Guest>()
+  useEffect(() => {
+    setPage('RSVP Form')
+    setUser(guest)
+  }, [guest])
   return (
     <div className="mt-8">
-      <Card front={<RSVPForm guest={data} onSuccess={() => {}} />} />
+      <Card front={<RSVPForm guest={guest} onSuccess={() => {}} />} />
     </div>
   )
 }

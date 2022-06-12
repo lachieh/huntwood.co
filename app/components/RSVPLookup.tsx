@@ -1,8 +1,10 @@
 import type { Guest } from '~/routes/rsvp'
+import { useEffect } from 'react'
 import { useFetcher, useLoaderData } from 'remix'
 import Button from '~/components/Button'
 import Input from '~/components/Input'
 import Text from '~/components/Text'
+import { setUser } from '~/utils/analytics'
 
 type Props = {}
 
@@ -12,6 +14,10 @@ const RSVPForm = (props: Props) => {
   const guestInfo =
     (guestFetcher.data as { guest: Guest })?.guest ?? existingGuest
   const guestError = (guestFetcher?.data as { error: string })?.error
+
+  useEffect(() => {
+    if (guestInfo?.names) setUser(guestInfo)
+  }, [guestInfo])
 
   return (
     <guestFetcher.Form
@@ -71,16 +77,6 @@ const RSVPForm = (props: Props) => {
 
         {guestInfo && (
           <>
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                  FS.identify('${guestInfo.id}', {
-                    displayName: '${guestInfo.names}',
-                    reviewsWritten_int: 14
-                  });
-                `,
-              }}
-            />
             <div className="mt-6 text-center">
               <Text size="md">We found your invite!</Text>
               <br />

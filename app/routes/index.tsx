@@ -7,6 +7,7 @@ import RSVPLookup from '~/components/RSVPLookup'
 import Text from '~/components/Text'
 import { rsvpToken } from '~/cookies'
 import close from '~/images/icon-close.svg'
+import { setPage } from '~/utils/analytics'
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const cookieHeader = request.headers.get('Cookie')
@@ -18,6 +19,10 @@ export default function Index() {
   const [flipped, setFlipped] = useState(false)
   const location = useLocation()
   const rsvpMarker = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setPage('Home')
+  }, [])
 
   useEffect(() => {
     if (location.hash.length && location.hash === '#rsvp') {

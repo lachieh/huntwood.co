@@ -1,7 +1,13 @@
+import { useEffect } from 'react'
 import Card from '~/components/Card'
 import { Markdown } from '~/components/Markdown'
+import { setPage } from '~/utils/analytics'
 
 export default function FAQ() {
+  useEffect(() => {
+    setPage('FAQs')
+  }, [])
+
   return (
     <div className="mt-8">
       <Card>
