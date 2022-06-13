@@ -216,9 +216,9 @@ const RSVPForm = ({ guest }: Props) => {
             <Textarea onChange={(e) => update('message', e.target.value)} />
           </label>
           <Text as="p" size="md" className="mb-6">
-            One last thing ☝️. If there is a song you would like to hear played
-            on the night, please search for it below. Mitch will curate the list
-            and critique your selections for inclusion on our playlist! 🎶💃🏻🕺🏼
+            One last thing ☝️. If there is a song (or songs) you would like to
+            hear played on the night, please search for it below. Add as many as
+            you like! 🎶💃🏻🕺🏼
           </Text>
           <SpotifyField
             value={songs || []}
@@ -230,8 +230,9 @@ const RSVPForm = ({ guest }: Props) => {
         <>
           <Text as="p" size="md" className="mb-6">
             Thanks for letting us know. We'd still love if you could contribute
-            to our day 🤗 so if there is a song you would like us to play on the
-            night, please search for it below. 🎶💃🏻🕺🏼
+            to our day 🤗 so if there is a song (or songs) you would like us to
+            play on the night, please search for it below. Add as many as you
+            like! 🎶💃🏻🕺🏼
           </Text>
           <SpotifyField
             value={songs || []}
