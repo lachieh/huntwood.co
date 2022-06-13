@@ -15,6 +15,7 @@ export function setPage(pageName: string) {
 
 export function setUser(guest: Guest) {
   if (typeof window === 'undefined') return
+  if (!guest) return
   FullStory.identify(guest.id, {
     displayName: guest.names,
   })
