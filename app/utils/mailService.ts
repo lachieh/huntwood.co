@@ -1,4 +1,5 @@
 import type { RSVPData } from '../routes/rsvp'
+import type { MessagesSendResult } from 'mailgun.js/interfaces/Messages'
 import * as fs from 'fs'
 import * as path from 'path'
 import FormData from 'form-data'
@@ -19,8 +20,11 @@ const mg = mailgun.client({
   username: config.username,
 })
 
-export async function sendMail(html: string, subject: string): Promise<void> {
-  mg.messages.create(config.domain, {
+export async function sendMail(
+  html: string,
+  subject: string,
+): Promise<MessagesSendResult> {
+  return mg.messages.create(config.domain, {
     from: config.from,
     to: config.to,
     subject,

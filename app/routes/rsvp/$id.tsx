@@ -43,9 +43,10 @@ export const action: ActionFunction = async ({ request, params, context }) => {
     }
   }
   try {
+    console.info('Email from: ' + submission.names)
     const html = rsvpTemplate(submission)
-    await sendMail(html, 'New RSVP from ' + submission.names)
-    console.info('Email sent:' + submission.email || submission.names)
+    const mailResult = await sendMail(html, 'New RSVP from ' + submission.names)
+    console.info('Sendgrid: ' + mailResult)
   } catch (e) {
     console.error('Failed to send email', e, submission)
   }
