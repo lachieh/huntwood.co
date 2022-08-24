@@ -1,5 +1,5 @@
 import type { Song } from '~/routes/api/song'
-import * as netlifyGraph from 'netlify/functions/netlifyGraph'
+import NetlifyGraph from 'netlify/functions/netlifyGraph'
 
 export function getSheetsLink(song: Song, nameOnly = false): string {
   const { name, artists, uri } = song
@@ -19,7 +19,7 @@ export async function addSongsToPlaylist(
   accessToken: string,
 ): Promise<number> {
   if (!songs.length) return 200
-  const response = await netlifyGraph.executeAddToPlaylist(
+  const response = await NetlifyGraph.executeAddToPlaylist(
     { uris: songs.map((song) => song.uri) },
     { accessToken },
   )

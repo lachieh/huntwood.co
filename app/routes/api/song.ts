@@ -1,6 +1,6 @@
 import type { LoaderFunction } from 'remix'
 import { json } from 'remix'
-import * as netlifyGraph from 'netlify/functions/netlifyGraph'
+import NetlifyGraph from 'netlify/functions/netlifyGraph'
 
 export interface Song {
   uri: string
@@ -17,7 +17,7 @@ export const loader: LoaderFunction = async ({ request, context }) => {
 
   if (!query) return json([], 404)
 
-  const { errors, data } = await netlifyGraph.fetchFindTracks(
+  const { errors, data } = await NetlifyGraph.fetchFindTracks(
     { query },
     { accessToken: context.netlifyGraphToken },
   )
