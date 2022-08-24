@@ -24,6 +24,7 @@ query FindTracks($query: String!) @netlify(id: """ea914478-dc01-4088-8a75-62aee6
         durationMs
         artists {
           name
+          oneGraphId
         }
         album {
           name

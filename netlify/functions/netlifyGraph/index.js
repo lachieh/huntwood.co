@@ -203,6 +203,7 @@ export const fetchFindTracks = (variables, options) => {
         durationMs
         artists {
           name
+          oneGraphId
         }
         album {
           name

@@ -123,6 +123,10 @@ export type FindTracks = {
              * The name of the artist.
              */
             name?: string
+            /**
+             * Unique id across all of OneGraph
+             */
+            oneGraphId: string
           }>
           /**
            * The album on which the track appears. The album object includes a link in href to full information about the album.
