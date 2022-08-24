@@ -1,5 +1,3 @@
-import { Link } from 'remix'
-
 type Props = {}
 
 const Spinner = (props: Props) => {
