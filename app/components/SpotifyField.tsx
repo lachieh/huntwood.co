@@ -19,12 +19,13 @@ const SpotifyField = ({ onChange, value = [] }: Props) => {
   const formRef = useRef<HTMLFormElement>(null)
   const songs = useFetcher<Song[] | { error: string }>()
 
-  const handleSearch = (form: HTMLFormElement | null) => {
+  const handleSearch = () => {
     if (ref.current) clearTimeout(ref.current)
-    const input = (form?.elements?.namedItem('q') as HTMLInputElement) || null
+    const input =
+      (formRef.current?.elements?.namedItem('q') as HTMLInputElement) || null
     setCurrentSearchTerm(input.value)
     ref.current = setTimeout(
-      () => input.value && songs.submit(form),
+      () => songs.submit(formRef.current),
       500,
     ) as unknown as number
   }
@@ -77,7 +78,11 @@ const SpotifyField = ({ onChange, value = [] }: Props) => {
       <div className="flex flex-col">
         <label className="flex flex-col mb-4 w-full">
           <Text>Search Spotify</Text>
-          <Input name="q" onChange={(e) => handleSearch(formRef.current)} />
+          <Input
+            name="q"
+            onChange={(e) => handleSearch(formRef.current)}
+            loading={songs.state === 'loading' || songs.state === 'submitting'}
+          />
         </label>
       </div>
       {songs.data &&
