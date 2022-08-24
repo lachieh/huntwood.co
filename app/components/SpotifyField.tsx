@@ -80,7 +80,7 @@ const SpotifyField = ({ onChange, value = [] }: Props) => {
           <Text>Search Spotify</Text>
           <Input
             name="q"
-            onChange={(e) => handleSearch(formRef.current)}
+            onChange={(e) => handleSearch()}
             loading={songs.state === 'loading' || songs.state === 'submitting'}
           />
         </label>
@@ -88,11 +88,7 @@ const SpotifyField = ({ onChange, value = [] }: Props) => {
       {songs.data &&
         (responseIsValid(songs.data) ? (
           !songs.data.length ? (
-            currentSearchTerm ? (
-              'No songs found'
-            ) : (
-              'Please enter a song title'
-            )
+            currentSearchTerm && 'No songs found'
           ) : (
             <div className="flex flex-col">
               {songs.data
