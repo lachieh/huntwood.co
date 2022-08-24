@@ -53,16 +53,7 @@ input OneGraphSubscriptionPollScheduleInput {
   every: OneGraphSubscriptionPollScheduleRepeatInput!
 }
 
-"""
-
-Optional authentication for making requests to the Gmail API if you want
-to use a custom gmail app instead of OneGraph's built-in app.
-
-Subscriptions are long-lived, so a refresh token must also be provided.
-
-If you use this arg, make sure you've updated OneGraph to use your OAuth credentials in the dashboard.
-
-"""
+"\nOptional authentication for making requests to the Gmail API if you want\nto use a custom gmail app instead of OneGraph's built-in app.\n\nSubscriptions are long-lived, so a refresh token must also be provided.\n\nIf you use this arg, make sure you've updated OneGraph to use your OAuth credentials in the dashboard.\n"
 input OneGraphSubscriptionGmailAuthArg {
   refreshToken: String!
   accessToken: String!
@@ -72,16 +63,7 @@ input OneGraphSubscriptionGmailAuthArg {
 input OneGraphSubscriptionAuthArg {
   twilio: OneGraphTwilioAuth
 
-  """
-  
-  Optional authentication for making requests to the Gmail API if you want
-  to use a custom gmail app instead of OneGraph's built-in app.
-  
-  Subscriptions are long-lived, so a refresh token must also be provided.
-  
-  If you use this arg, make sure you've updated OneGraph to use your OAuth credentials in the dashboard.
-  
-  """
+  "\nOptional authentication for making requests to the Gmail API if you want\nto use a custom gmail app instead of OneGraph's built-in app.\n\nSubscriptions are long-lived, so a refresh token must also be provided.\n\nIf you use this arg, make sure you've updated OneGraph to use your OAuth credentials in the dashboard.\n"
   gmail: OneGraphSubscriptionGmailAuthArg
 }
 
@@ -141,7 +123,8 @@ input SignoutServicesData {
   Auths to establish the anchor. Note that these auths won't be removed from the personal token.
   """
   anchorAuth: OneGraphServiceAuths
-  services: [OneGraphServiceEnum!]!
+  servicesGraphQLFields: [String!]
+  services: [OneGraphServiceEnum!]
 }
 
 input OneGraphSignoutServiceUserInput {
@@ -150,23 +133,32 @@ input OneGraphSignoutServiceUserInput {
   """
   foreignUserId: String!
 
+  """GraphQL field identifying the service that you want to sign out of."""
+  graphQLField: String
+
   """Service that you want to sign out of."""
-  service: OneGraphServiceEnum!
+  service: OneGraphServiceEnum
 }
 
 type SignoutServicesResponsePayload {
   me: Viewer!
+
+  """Authlify token that was updated by this mutation"""
+  authlifyToken: AuthlifyToken
 }
 
 input OneGraphUpdateServicePatchInput {
   """The OAuth 2.0 configuration for the service"""
-  oAuth2Config: OneGraphCreateServiceConfigurationMutationInput
+  oAuth2Config: OneGraphCreateServiceConfigurationMutationInputOAuthConfig
 
   """The service enum for the service"""
   graphQLEnum: String
 
   """The service friendly name, to be displayed to users."""
   friendlyServiceName: String
+
+  """The graphQL field identifying the service in the schema."""
+  graphQLField: String
 }
 
 input OneGraphUpdateServiceInput {
@@ -174,18 +166,56 @@ input OneGraphUpdateServiceInput {
   patch: OneGraphUpdateServicePatchInput!
 
   """The field identifying the service in the resulting GraphQL schema."""
-  gqlField: String!
+  graphQLField: String!
 
   """The app ID that the service belongs to."""
   appId: String!
 }
 
+"""An OAuth scope that the service supports."""
+input OneGraphServiceScopeInput {
+  title: String
+  description: String!
+  isRequired: Boolean!
+  isDefault: Boolean!
+  display: String!
+  scope: String!
+  category: String
+}
+
+input OneGraphCreateServiceConfigurationMutationInputOAuthConfig {
+  """
+  OAuth scopes supported by the service, according to RFC6749 Section 1.4
+  """
+  scopes: [OneGraphServiceScopeInput!]
+
+  """
+  The registered client secret, issued by the service upon registration, according to RFC6749 Section 2.3 
+  """
+  clientSecret: String!
+
+  """
+  The registered client identifier for the service, issued by the service upon registration, according to RFC6749 Section 2.2
+  """
+  clientId: String!
+
+  """
+  The Token URI for obtaining an access token by presenting its authorization grant or refresh token, according to RFC6749 Section 3.2
+  """
+  tokenUri: String!
+
+  """
+  The Authorization URI for obtaining an authorization grant, according to RFC6749 Section 3.1
+  """
+  authorizationUri: String!
+}
+
 input OneGraphCreateServiceConfigurationMutationInput {
   """The OAuth 2.0 configuration for the service."""
-  oAuth2Config: OneGraphCreateServiceConfigurationMutationInput
+  oAuth2Config: OneGraphCreateServiceConfigurationMutationInputOAuthConfig
 
   """The service enum for the service. Must be SCREAMING_SNAKE_CASE."""
-  graphQLEnum: String!
+  graphQLEnum: String
 
   """
   The toplevel GraphQL field that allows accessing this service in the Graph. Must be camelCase.
@@ -195,6 +225,14 @@ input OneGraphCreateServiceConfigurationMutationInput {
   """The service friendly name, to be displayed to users."""
   friendlyServiceName: String!
   appId: String!
+}
+
+type OneGraphServiceMutationResponsePayload {
+  """The app that is associated with the Netlify site."""
+  app: OneGraphApp!
+
+  """The service that this mutation refers to."""
+  service: OneGraphServiceInfo
 }
 
 input OneGraphCreateSharedDocumentInput {
@@ -258,11 +296,21 @@ type OneGraphDeleteNetlifyCliSessionResponsePayload {
 }
 
 input OneGraphUpdateNetlifyCliSessionInput {
+  """
+  A new GraphQL schema to create and associate with the session. This will replace any existing document associated with the session.
+  """
+  graphQLSchema: OneGraphCliSessionGraphQLSchemaInput
+
+  """
+  A new persisted document to create and associate with the session. This will replace any existing document associated with the session.
+  """
+  persistedDocument: OneGraphCliSessionPersistedDocumentInput
+
   """Mark the session active or inactive"""
   status: OneGraphNetlifyCliSessionStatus
 
   """Optional metadata for the session"""
-  metadata: JSON
+  metadata: JSONObject
 
   """An optional name for the session"""
   name: String
@@ -276,12 +324,82 @@ type OneGraphUpdateNetlifyCliSessionResponsePayload {
   session: OneGraphNetlifyCliSession!
 }
 
+input OneGraphCliSessionGraphQLSchemaInput {
+  """
+  Whether to set this schema as the default for the app. Defaults to false.
+  """
+  setAsDefaultForApp: Boolean = false
+
+  """External GraphQL schemas to add"""
+  externalGraphQLSchemas: [OneGraphGraphQLSchemaExternalGraphQLSchemaInput!]
+
+  """Optional id of a Salesforce schema to attach to the GraphQL schema."""
+  salesforceSchemaId: String
+
+  """The optional id of the GraphQL schema that this was derived from."""
+  parentId: String
+
+  """
+  The list of services that this schema should use. Leave blank if you want to add support for all supported services.
+  """
+  enabledServices: [OneGraphServiceEnumArg!]
+
+  """
+  The list of GraphQL fields identifying services that this schema should use. Leave blank if you want to add support for all supported services. Note that this field won't be merged with `enabledServices`, which takes an enum and is deprecated.
+  """
+  graphQLFieldForEnabledServices: [String!]
+}
+
+input OneGraphCliSessionPersistedDocumentInput {
+  """
+  The parent persisted query. It can be used to track lineage of the query.
+  """
+  parent: OneGraphCreatePersistedQueryParentInput
+
+  """
+  A description for the persisted query. Maximum length is 2096 characters.
+  """
+  description: String
+
+  """
+  List of tags to add to the persisted query. Tags are free-form text that can be used to categorize persisted queries. Each tag must be under 256 characters and there can be a maximum of 10 tags on a single persisted query.
+  """
+  tags: [String!]
+  accessToken: String
+
+  """
+  If set to true, and there was a successful execution of the query in the last 30 days, then the last successful result will be returned if we encounter any error when executing the query. If we do not have a previous successful result, then the response with the error will be returned.
+  
+                           Note that the fallback result will be returned even in the case of partial success.
+  
+                           This parameter is useful when you expect that your queries might be rate-limited by the underlying service.
+  
+                           The query must provide a cache strategy in order to use `fallbackOnError`.
+  """
+  fallbackOnError: Boolean
+  cacheStrategy: OneGraphPersistedQueryCacheStrategyArg
+
+  """
+  Operation names to allow. If not provided, then all operations in the document are allowed.
+  """
+  allowedOperationNames: [String!]
+  fixedVariables: JSON
+  freeVariables: [String!]
+  query: String!
+}
+
 input OneGraphCreateNetlifyCliSessionInput {
+  """A new GraphQL schema to create and associate with the session."""
+  graphQLSchema: OneGraphCliSessionGraphQLSchemaInput
+
+  """A new persisted document to create and associate with the session."""
+  persistedDocument: OneGraphCliSessionPersistedDocumentInput
+
   """Status for the session. Defaults to ACTIVE."""
   status: OneGraphNetlifyCliSessionStatus = ACTIVE
 
   """Optional metadata for the session"""
-  metadata: JSON
+  metadata: JSONObject
 
   """An optional name for the session"""
   name: String
@@ -311,6 +429,19 @@ input OneGraphModifySchemaTokenInput {
 type OneGraphCreateModifySchemaTokenResponsePayload {
   """The access token that can be used to modify the app's schema."""
   accessToken: OneGraphAccessToken!
+}
+
+input OneGraphForkGraphQLSchemaEnabledServiceGraphQLFieldsChangesInput {
+  """
+  List of GraphQL fields identifying services to replace current services in the schema with the given list of services. Can not be combined with add or remove.
+  """
+  serviceGraphQLFieldsToReplace: [String!]
+
+  """List of GraphQL fields identifying services to remove to the schema."""
+  serviceGraphQLFieldsToRemove: [String!]
+
+  """List of GraphQL fields identifying services to add to the schema."""
+  serviceGraphQLFieldsToAdd: [String!]
 }
 
 input OneGraphForkGraphQLSchemaEnabledServicesChangesInput {
@@ -345,6 +476,7 @@ input OneGraphForkGraphQLSchemaSalesforceChangesInput {
 }
 
 input OneGraphForkGraphQLSchemaChangesInput {
+  graphQLFieldForEnabledServices: OneGraphForkGraphQLSchemaEnabledServiceGraphQLFieldsChangesInput
   enabledServices: OneGraphForkGraphQLSchemaEnabledServicesChangesInput
   externalGraphQLSchemas: OneGraphForkGraphQLSchemaExternalGraphQLSchemaChangesInput
   salesforceSchema: OneGraphForkGraphQLSchemaSalesforceChangesInput
@@ -402,6 +534,11 @@ input OneGraphCreateGraphQLSchemaInput {
   The list of services that this schema should use. Leave blank if you want to add support for all supported services.
   """
   enabledServices: [OneGraphServiceEnumArg!]
+
+  """
+  The list of GraphQL fields identifying services that this schema should use. Leave blank if you want to add support for all supported services. Note that this field won't be merged with `enabledServices`, which takes an enum and is deprecated.
+  """
+  graphQLFieldForEnabledServices: [String!]
 
   """The id of the app that the schema should belong to."""
   appId: String!
@@ -730,8 +867,15 @@ type OneGraphUpdateExternalGraphQLSchemaPayload {
 }
 
 input OneGraphAddExternalGraphQLSchemaInput {
-  """Endpoint to make GraphQL queries against."""
-  service: OneGraphSupportedExternalGraphQLService!
+  """
+  GraphQL field identifying the service to associate with the schema. Mutually exclusive with `service`
+  """
+  graphqlField: String
+
+  """
+  Service to associate with the schema. Mutually exclusive with `graphqlField`
+  """
+  service: OneGraphSupportedExternalGraphQLService
 
   """Endpoint to make GraphQL queries against."""
   endpoint: String!
@@ -933,6 +1077,11 @@ input OneGraphCreatePersistedQueryParentInput {
 }
 
 input OneGraphPersistedQueryCacheStrategyArg {
+  """
+  Number of seconds to serve a stale response while revalidating the request in the background.
+  """
+  staleWhileRevalidateSeconds: Float
+
   """Number of seconds to cache the query result for."""
   timeToLiveSeconds: Float!
 }
@@ -957,11 +1106,11 @@ input OneGraphCreatePersistedQueryInput {
   """
   If set to true, and there was a successful execution of the query in the last 30 days, then the last successful result will be returned if we encounter any error when executing the query. If we do not have a previous successful result, then the response with the error will be returned.
   
-  Note that the fallback result will be returned even in the case of partial success.
+                           Note that the fallback result will be returned even in the case of partial success.
   
-  This parameter is useful when you expect that your queries might be rate-limited by the underlying service.
+                           This parameter is useful when you expect that your queries might be rate-limited by the underlying service.
   
-  The query must provide a cache strategy in order to use `fallbackOnError`.
+                           The query must provide a cache strategy in order to use `fallbackOnError`.
   """
   fallbackOnError: Boolean
   cacheStrategy: OneGraphPersistedQueryCacheStrategyArg
@@ -1070,6 +1219,9 @@ type OneGraphAddAuthsToPersonalTokenResponsePayload {
   """Personal access token that was updated by this mutation"""
   accessToken: OneGraphAccessToken!
 
+  """Authlify token that was updated by this mutation"""
+  authlifyToken: AuthlifyToken
+
   """OneGraph user"""
   oneUser: OneGraphUser
 }
@@ -1106,6 +1258,22 @@ input OneGraphGraphQLSubscriptionUpdateInputPatch {
 
   """The new query to replace the existing subscription query."""
   query: String!
+}
+
+input OneGraphGraphQLSubscriptionUpdateInput {
+  """The fields of the subscription to update."""
+  patch: OneGraphGraphQLSubscriptionUpdateInputPatch!
+
+  """
+  The signing secret that the subscription was created with. Note that this will not update the existing secret.
+  """
+  secret: OneGraphSubscriptionSecretInput
+  subscriptionId: String!
+}
+
+type OneGraphGraphQLSubscriptionUpdateResponsePayload {
+  """GraphQL Subscription that was modified by this mutation"""
+  subscription: OneGraphAppSubscription!
 }
 
 input OneGraphSubscriptionSecretInput {
@@ -1190,20 +1358,35 @@ input OneGraphSubscriptionSecretInput {
   hmacSha256Key: String
 }
 
-input OneGraphGraphQLSubscriptionUpdateInput {
-  """The fields of the subscription to update."""
-  patch: OneGraphGraphQLSubscriptionUpdateInputPatch!
+input OneGraphGraphQLSubscriptionRetryInput {
+  """The signing secret that the subscription was created with."""
+  secret: OneGraphSubscriptionSecretInput
 
   """
-  The signing secret that the subscription was created with. Note that this will not update the existing secret.
+  Whether to deliver the payload according to the subscription's delivery mechanism (e.g. via webhook or websocket).
   """
-  secret: OneGraphSubscriptionSecretInput
+  deliverPayload: Boolean!
+  eventId: String!
   subscriptionId: String!
 }
 
-type OneGraphGraphQLSubscriptionUpdateResponsePayload {
-  """GraphQL Subscription that was modified by this mutation"""
-  subscription: OneGraphAppSubscription!
+type OneGraphGraphQLSubscriptionRetryResponsePayload {
+  """The id of the event that was retried."""
+  eventId: String!
+
+  """
+  The subscription payload that was created from retrying the event if `deliverPayload` is true.
+  
+  Note that there may be no payload if the event was from a `poll` subscription where `onlyTriggerPayloadWhenChanged` is true.
+  """
+  payload: OneGraphAppSubscriptionPayload
+
+  """
+  The subscription payload body that was created from retrying the event.
+  
+  Note that there may be no payload body if the event was from a `poll` subscription where `onlyTriggerPayloadWhenChanged` is true.
+  """
+  payloadBody: JSON
 }
 
 input OneGraphGraphQLSubscriptionUnsubscribeInput {
@@ -1256,6 +1439,7 @@ enum OneGraphCustomServiceAuthServiceEnum {
   GOOGLE_TRANSLATE
   HUBSPOT
   INTERCOM
+  JIRA
   MAILCHIMP
   MEETUP
   NETLIFY
@@ -1264,6 +1448,7 @@ enum OneGraphCustomServiceAuthServiceEnum {
   PRODUCT_HUNT
   QUICKBOOKS
   SALESFORCE
+  SALESLOFT
   SANITY
   SHOPIFY_ADMIN
   SHOPIFY_STOREFRONT
@@ -1322,7 +1507,8 @@ input OneGraphCreateServiceAuthInput {
   gmailWatchPubSubTopic: String
   clientSecret: String!
   clientId: String!
-  service: OneGraphCustomServiceAuthServiceEnum!
+  serviceGraphQLField: String
+  service: OneGraphCustomServiceAuthServiceEnum
   appId: String!
 }
 
@@ -1698,6 +1884,7 @@ type OneGraphMutation {
   createServiceAuth(data: OneGraphCreateServiceAuthInput!): OneGraphCreateServiceAuthResponsePayload!
   destroyServiceAuth(data: OneGraphDestroyServiceAuthInput!): OneGraphDestroyServiceAuthResponsePayload!
   subscriptionUnsubscribe(data: OneGraphGraphQLSubscriptionUnsubscribeInput!): OneGraphGraphQLSubscriptionUnsubscribeResponsePayload!
+  retrySubscriptionEvent(input: OneGraphGraphQLSubscriptionRetryInput!): OneGraphGraphQLSubscriptionRetryResponsePayload!
   updateSubscription(input: OneGraphGraphQLSubscriptionUpdateInput!): OneGraphGraphQLSubscriptionUpdateResponsePayload!
   createPersonalToken(input: OneGraphCreatePersonalTokenInput!): OneGraphCreatePersonalTokenResponsePayload!
   deletePersonalToken(input: OneGraphDeletePersonalTokenInput!): OneGraphDeletePersonalTokenResponsePayload!
@@ -1805,15 +1992,15 @@ type OneGraphMutation {
 
   """Create a shared document"""
   createSharedDocument(input: OneGraphCreateSharedDocumentInput!): OneGraphCreateSharedDocumentResponsePayload!
-  createService(input: OneGraphCreateServiceConfigurationMutationInput!): OneGraphApp!
-  updateService(input: OneGraphUpdateServiceInput!): OneGraphApp!
+  createService(input: OneGraphCreateServiceConfigurationMutationInput!): OneGraphServiceMutationResponsePayload!
+  updateService(input: OneGraphUpdateServiceInput!): OneGraphServiceMutationResponsePayload!
   deleteService(
     """
     The toplevel GraphQL field that allows accessing this service in the Graph. Must be camelCase
     """
     graphQLField: String!
     appId: String!
-  ): OneGraphApp!
+  ): OneGraphServiceMutationResponsePayload!
 }
 
 """
@@ -1828,6 +2015,15 @@ type SpotifyPassthroughMutation {
   Make a POST request to the Spotify API. Use this as an escape hatch if OneGraph does not yet support functionality of the underlying API.
   """
   post(
+    """
+    Additional headers that should be added to the request. They should be sent as a list of key-value pairs, e.g. `[["accept", "application/json"]]`.
+    
+    Note that an accept or content-type header provided here will override the `accept` or `contentType` input args.
+    
+    Currently allowed headers are `accept`, `if-modified-since`, and `if-none-match`. Contact support if you have a header you would like to use.
+    """
+    headers: [[String!]!]
+
     """The body to send. Only provide one of body or jsonBody."""
     body: String
 
@@ -1865,6 +2061,15 @@ type SpotifyPassthroughMutation {
   Make a PUT request to the Spotify API. Use this as an escape hatch if OneGraph does not yet support functionality of the underlying API.
   """
   put(
+    """
+    Additional headers that should be added to the request. They should be sent as a list of key-value pairs, e.g. `[["accept", "application/json"]]`.
+    
+    Note that an accept or content-type header provided here will override the `accept` or `contentType` input args.
+    
+    Currently allowed headers are `accept`, `if-modified-since`, and `if-none-match`. Contact support if you have a header you would like to use.
+    """
+    headers: [[String!]!]
+
     """The body to send. Only provide one of body or jsonBody."""
     body: String
 
@@ -1902,6 +2107,15 @@ type SpotifyPassthroughMutation {
   Make a PATCH request to the Spotify API. Use this as an escape hatch if OneGraph does not yet support functionality of the underlying API.
   """
   patch(
+    """
+    Additional headers that should be added to the request. They should be sent as a list of key-value pairs, e.g. `[["accept", "application/json"]]`.
+    
+    Note that an accept or content-type header provided here will override the `accept` or `contentType` input args.
+    
+    Currently allowed headers are `accept`, `if-modified-since`, and `if-none-match`. Contact support if you have a header you would like to use.
+    """
+    headers: [[String!]!]
+
     """The body to send. Only provide one of body or jsonBody."""
     body: String
 
@@ -1939,6 +2153,15 @@ type SpotifyPassthroughMutation {
   Make a DELETE request to the Spotify API. Use this as an escape hatch if OneGraph does not yet support functionality of the underlying API.
   """
   delete(
+    """
+    Additional headers that should be added to the request. They should be sent as a list of key-value pairs, e.g. `[["accept", "application/json"]]`.
+    
+    Note that an accept or content-type header provided here will override the `accept` or `contentType` input args.
+    
+    Currently allowed headers are `accept`, `if-modified-since`, and `if-none-match`. Contact support if you have a header you would like to use.
+    """
+    headers: [[String!]!]
+
     """The body to send. Only provide one of body or jsonBody."""
     body: String
 
@@ -2125,6 +2348,11 @@ input OneGraphSharedDocumentsModerationStatusFilter {
   equalTo: OneGraphSharedDocumentModerationStatusEnum
 }
 
+input OneGraphSharedDocumentsGraphQLFieldsServicesFilter {
+  in: [String!]
+  equalTo: String
+}
+
 input OneGraphSharedDocumentsServicesFilter {
   in: [OneGraphServiceEnumArg!]
   equalTo: OneGraphServiceEnumArg
@@ -2132,6 +2360,7 @@ input OneGraphSharedDocumentsServicesFilter {
 
 input OneGraphSharedDocumentsFilter {
   moderationStatus: OneGraphSharedDocumentsModerationStatusFilter
+  graphQLFieldsFilter: OneGraphSharedDocumentsGraphQLFieldsServicesFilter
   services: OneGraphSharedDocumentsServicesFilter
 }
 
@@ -2189,6 +2418,9 @@ enum OneGraphNetlifyCliSessionStatus {
   TERMINATED
 }
 
+"""Represents a JSON object"""
+scalar JSONObject
+
 type OneGraphNetlifyCliSession {
   id: String!
   appId: String!
@@ -2201,11 +2433,14 @@ type OneGraphNetlifyCliSession {
   createdAt: String!
   updatedAt: String!
   lastEventAt: String
-  metadata: JSON
+  lastCliHeartbeatAt: String
+  metadata: JSONObject
   status: OneGraphNetlifyCliSessionStatus!
 
   """Number of milliseconds to wait between heartbeats"""
   cliHeartbeatIntervalMs: Int!
+  persistedDocument: OneGraphPersistedQuery
+  graphQLSchema: OneGraphGraphQLSchema
 }
 
 type OneGraphNetlifyCliSessionLogEvent implements OneGraphNetlifyCliSessionEvent {
@@ -2229,6 +2464,9 @@ interface OneGraphNetlifyCliSessionEvent {
 }
 
 type AuthlifyToken {
+  """The AuthlifyToken ID"""
+  id: String!
+
   """Metadata and logged-in state for all OneGraph services"""
   serviceMetadata: OneGraphServicesMetadata!
 }
@@ -2437,6 +2675,7 @@ type OneGraphServerInfo {
 
   """"""
   buildNumber: Int!
+  migrationVersion: Int!
 }
 
 """Customizations to a OneGraph schema."""
@@ -2529,6 +2768,7 @@ type OneGraphSalesforceSchema {
 enum OneGraphSupportedExternalGraphQLService {
   GRAPHCMS
   WORDPRESS
+  CUSTOM
 }
 
 type OneGraphExternalGraphQLSchema {
@@ -2542,7 +2782,10 @@ type OneGraphExternalGraphQLSchema {
   updatedAt: String!
 
   """Service of the external graphql schema"""
-  service: OneGraphSupportedExternalGraphQLService!
+  service: OneGraphSupportedExternalGraphQLService! @deprecated(reason: "Use `serviceInfo` instead")
+
+  """Service information for the external graphql schema"""
+  serviceInfo: OneGraphServiceInfo!
 
   """GraphQL endpoint of the external graphql schema"""
   endpoint: String!
@@ -2566,6 +2809,118 @@ type OneGraphGithubRepositorySubscriptionDelegate {
 
 type OneGraphGithubRepositorySubscriptionDelegateConnection {
   nodes: [OneGraphGithubRepositorySubscriptionDelegate!]!
+}
+
+input OneGraphPersistedQueryFactsDefinitionStringFilter {
+  notIn: [String!]
+  in: [String!]
+  notEqualTo: String
+  equalTo: String
+}
+
+input OneGraphPersistedQueryFactsDefinitionFilter {
+  name: OneGraphPersistedQueryFactsDefinitionStringFilter
+}
+
+type OneGraphPersistedQueryVariableDefinition {
+  name: String!
+  typeString: String!
+  defaultValue: String
+}
+
+enum OneGraphPersistedQueryOperationType {
+  QUERY
+  MUTATION
+  SUBSCRIPTION
+}
+
+type OneGraphPersistedQueryOperation implements OneGraphPersistedQueryDefinition {
+  body(
+    """
+    A list of directives to strip from the body. Only filters directives at query, mutation, subscription, and fragment definition locations.
+    """
+    stripDirectives: [String!]
+  ): String!
+  name: String
+  netlifyDirective: OneGraphNetlifyDirective
+  opType: OneGraphPersistedQueryOperationType!
+  variables: [OneGraphPersistedQueryVariableDefinition!]!
+}
+
+type OneGraphNetlifyDirective {
+  """The uuid of the operation (normally auto-generated)"""
+  id: String!
+
+  """The docstring for this operation"""
+  doc: String
+}
+
+type OneGraphPersistedQueryFragment implements OneGraphPersistedQueryDefinition {
+  body(
+    """
+    A list of directives to strip from the body. Only filters directives at query, mutation, subscription, and fragment definition locations.
+    """
+    stripDirectives: [String!]
+  ): String!
+  name: String!
+  netlifyDirective: OneGraphNetlifyDirective
+  typeCondition: String!
+}
+
+interface OneGraphPersistedQueryDefinition {
+  body(
+    """
+    A list of directives to strip from the body. Only filters directives at query, mutation, subscription, and fragment definition locations.
+    """
+    stripDirectives: [String!]
+  ): String!
+  netlifyDirective: OneGraphNetlifyDirective
+}
+
+type OneGraphPersistedQueryFacts {
+  """
+  The list of definitions (operations and fragments) that appear in the persisted document.
+  """
+  definitions(
+    """List of filters, applied with logical AND."""
+    filter: OneGraphPersistedQueryFactsDefinitionFilter
+  ): [OneGraphPersistedQueryDefinition!]!
+
+  """
+  The list of operations of type Query that appear in the persisted document.
+  """
+  queryOperations(
+    """List of filters, applied with logical AND."""
+    filter: OneGraphPersistedQueryFactsDefinitionFilter
+  ): [OneGraphPersistedQueryOperation!]!
+
+  """
+  The list of operations of type Mutation that appear in the persisted document.
+  """
+  mutationOperations(
+    """List of filters, applied with logical AND."""
+    filter: OneGraphPersistedQueryFactsDefinitionFilter
+  ): [OneGraphPersistedQueryOperation!]!
+
+  """
+  The list of operations of type Subscription that appear in the persisted document.
+  """
+  subscriptionOperations(
+    """List of filters, applied with logical AND."""
+    filter: OneGraphPersistedQueryFactsDefinitionFilter
+  ): [OneGraphPersistedQueryOperation!]!
+
+  """The list of operations that appear in the persisted document."""
+  fragments(
+    """List of filters, applied with logical AND."""
+    filter: OneGraphPersistedQueryFactsDefinitionFilter
+  ): [OneGraphPersistedQueryFragment!]!
+
+  """The list of operations that appear in the persisted document."""
+  operations(
+    """List of filters, applied with logical AND."""
+    filter: OneGraphPersistedQueryFactsDefinitionFilter
+  ): [OneGraphPersistedQueryOperation!]!
 }
 
 """Persisted query"""
@@ -2597,6 +2952,7 @@ type OneGraphPersistedQuery {
 
   """The parent of this query, if it has one."""
   parent: OneGraphPersistedQuery
+  documentFacts: OneGraphPersistedQueryFacts!
 }
 
 """List of persisted queries."""
@@ -2844,6 +3200,11 @@ type OneGraphAppSubscriptionPayload {
   If there was an error delivering the payload to a webhook destination, this field will contain the first 512 bytes of the response we receieved from the server.
   """
   lastError: String
+
+  """
+  The id of the event associated with this payload. The eventId can be used to retry the subscription with the `oneGraph.retrySubscriptionEvent` mutation.
+  """
+  eventId: String
 }
 
 """Payloads for a subscription"""
@@ -2955,7 +3316,12 @@ type OneGraphAdrollServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -3006,7 +3372,12 @@ type OneGraphAsanaServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -3057,7 +3428,12 @@ type OneGraphBoxServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -3108,7 +3484,12 @@ type OneGraphCloudinaryServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -3159,7 +3540,12 @@ type OneGraphContentfulServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -3210,7 +3596,12 @@ type OneGraphDevToServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -3261,7 +3652,12 @@ type OneGraphDocusignServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -3312,7 +3708,12 @@ type OneGraphDribbbleServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -3363,7 +3764,12 @@ type OneGraphDropboxServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -3414,7 +3820,12 @@ type OneGraphEggheadioServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -3465,7 +3876,12 @@ type OneGraphEventilServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -3516,7 +3932,12 @@ type OneGraphFacebookServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -3567,7 +3988,12 @@ type OneGraphFirebaseServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -3623,7 +4049,12 @@ type OneGraphGitHubServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -3675,7 +4106,12 @@ type OneGraphGmailServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -3726,7 +4162,12 @@ type OneGraphGongServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -3777,7 +4218,12 @@ type OneGraphGoogleServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -3828,7 +4274,12 @@ type OneGraphGoogleAdsServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -3879,7 +4330,12 @@ type OneGraphGoogleAnalyticsServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -3930,7 +4386,12 @@ type OneGraphGoogleCalendarServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -3981,7 +4442,12 @@ type OneGraphGoogleComputeServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -4032,7 +4498,12 @@ type OneGraphGoogleDocsServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -4083,7 +4554,12 @@ type OneGraphGoogleSearchConsoleServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -4134,7 +4610,12 @@ type OneGraphGoogleTranslateServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -4185,7 +4666,12 @@ type OneGraphHubspotServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -4236,7 +4722,68 @@ type OneGraphIntercomServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
+
+  """clientId for the serviceAuth."""
+  clientId: String!
+
+  """clientSecret for the serviceAuth."""
+  clientSecret: String!
+
+  """
+  Optional pubsub topic for gmail auth. Required to use gmail subscriptions with custom OAuth credentials.
+  """
+  gmailWatchPubSubTopic: String
+
+  """
+  Developer token for the Google Ads api. Required to use the Google Ads api.
+  """
+  googleDeveloperToken: String
+
+  """
+  App name for Trello OAuth client. This is the name that will be displayed on the OAuth login form.
+  """
+  trelloAppName: String
+
+  """Optional scopes to use for the OAuth flow."""
+  scopes: [String!]
+
+  """
+  If true, the bearer token that is created fetchable by the user whose account the token grants access to.
+  """
+  revealTokens: Boolean!
+
+  """Custom OAuth redirect URI."""
+  customRedirectUri: String
+
+  """Custom CNAME host."""
+  cname: String
+
+  """
+  The redirect url that the user should add in the OAuth config on the service's settings page (external to Netlify).
+  """
+  redirectUri: String!
+}
+
+"""Custom OAuth client for Jira"""
+type OneGraphJiraServiceAuth implements OneGraphServiceAuth {
+  """id for the service auth"""
+  id: String!
+
+  """
+  The service that the clientId and clientSecret belong to, e.g. "gmail"
+  """
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -4287,7 +4834,12 @@ type OneGraphMailchimpServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -4338,7 +4890,12 @@ type OneGraphMeetupServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -4389,7 +4946,12 @@ type OneGraphNetlifyServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -4440,7 +5002,12 @@ type OneGraphNotionServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -4491,7 +5058,12 @@ type OneGraphOutreachServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -4542,7 +5114,12 @@ type OneGraphProductHuntServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -4593,7 +5170,12 @@ type OneGraphQuickbooksServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -4644,7 +5226,68 @@ type OneGraphSalesforceServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
+
+  """clientId for the serviceAuth."""
+  clientId: String!
+
+  """clientSecret for the serviceAuth."""
+  clientSecret: String!
+
+  """
+  Optional pubsub topic for gmail auth. Required to use gmail subscriptions with custom OAuth credentials.
+  """
+  gmailWatchPubSubTopic: String
+
+  """
+  Developer token for the Google Ads api. Required to use the Google Ads api.
+  """
+  googleDeveloperToken: String
+
+  """
+  App name for Trello OAuth client. This is the name that will be displayed on the OAuth login form.
+  """
+  trelloAppName: String
+
+  """Optional scopes to use for the OAuth flow."""
+  scopes: [String!]
+
+  """
+  If true, the bearer token that is created fetchable by the user whose account the token grants access to.
+  """
+  revealTokens: Boolean!
+
+  """Custom OAuth redirect URI."""
+  customRedirectUri: String
+
+  """Custom CNAME host."""
+  cname: String
+
+  """
+  The redirect url that the user should add in the OAuth config on the service's settings page (external to Netlify).
+  """
+  redirectUri: String!
+}
+
+"""Custom OAuth client for Salesloft"""
+type OneGraphSalesloftServiceAuth implements OneGraphServiceAuth {
+  """id for the service auth"""
+  id: String!
+
+  """
+  The service that the clientId and clientSecret belong to, e.g. "gmail"
+  """
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -4695,7 +5338,12 @@ type OneGraphSanityServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -4746,7 +5394,12 @@ type OneGraphShopifyAdminServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -4797,7 +5450,12 @@ type OneGraphShopifyStorefrontServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -4878,7 +5536,12 @@ type OneGraphSlackServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -4930,7 +5593,12 @@ type OneGraphSpotifyServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -4981,7 +5649,12 @@ type OneGraphStripeServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -5032,7 +5705,12 @@ type OneGraphTwitchTvServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -5083,7 +5761,12 @@ type OneGraphTwilioServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -5134,7 +5817,12 @@ type OneGraphYnabServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -5185,7 +5873,12 @@ type OneGraphYoutubeServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -5236,7 +5929,12 @@ type OneGraphZeitServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -5287,7 +5985,12 @@ type OneGraphZendeskServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -5338,7 +6041,12 @@ type OneGraphTrelloServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -5389,7 +6097,12 @@ type OneGraphTwitterServiceAuth implements OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo` instead.")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -5440,7 +6153,12 @@ interface OneGraphServiceAuth {
   """
   The service that the clientId and clientSecret belong to, e.g. "gmail"
   """
-  service: String!
+  service: String! @deprecated(reason: "Use `serviceInfo instead`")
+
+  """
+  The service information for the service that the clientId and clientSecret belong to
+  """
+  serviceInfo: OneGraphServiceInfo!
 
   """clientId for the serviceAuth."""
   clientId: String!
@@ -5579,6 +6297,9 @@ type OneGraphApp {
     first: Int = 10
   ): OneGraphPersistedQueryConnection!
 
+  """List of services for this app"""
+  services(filter: OneGraphServiceInfoFilter): [OneGraphServiceInfo!]!
+
   """GitHub repos for the app that can have subscriptions on OneGraph."""
   gitHubRepositorySubscriptionDelegates: OneGraphGithubRepositorySubscriptionDelegateConnection!
 
@@ -5676,6 +6397,11 @@ type OneGraphShortenedQuery {
 }
 
 input OneGraphServiceInfoServiceFilter {
+  """
+  The GraphQL fields identifying services to include in the list of services
+  """
+  graphQLFieldsIn: [String!]
+
   """Filter for services that are in the list of services"""
   in: [OneGraphServiceEnumArg!]
 }
@@ -5704,7 +6430,7 @@ input OneGraphServiceInfoFilter {
 Root fields for the OneGraph service. Used by OneGraph to build OneGraph.
 """
 type OneGraphServiceQuery {
-  services(filter: OneGraphServiceInfoFilter): [OneGraphServiceInfo!]!
+  services(filter: OneGraphServiceInfoFilter, appId: String): [OneGraphServiceInfo!]!
   shortenedUrl(id: String!): OneGraphShortenedQuery
   queries: [OneGraphQuery!]!
   searchQueries(query: String!): [OneGraphQuery!]!
@@ -5755,7 +6481,13 @@ type OneGraphServiceQuery {
     """The id of the GraphQL schema."""
     id: String!
   ): OneGraphGraphQLSchema!
-  authlifyToken(authlifyTokenId: String!): AuthlifyToken!
+  authlifyToken(
+    """
+    The appId that the token belongs to. If not provided, it will be looked up from the token.
+    """
+    appId: String
+    authlifyTokenId: String!
+  ): AuthlifyToken!
 
   """Personal access token lookup"""
   personalToken(accessToken: String!): OneGraphAccessToken
@@ -5785,6 +6517,7 @@ type OneGraphServiceQuery {
     """
     first: Int = 10
     filter: OneGraphSharedDocumentsFilter
+    appId: String
   ): OneGraphSharedDocumentConnection!
 }
 
@@ -6018,6 +6751,15 @@ type SpotifyPassthroughQuery {
   Make a GET request to the Spotify API. Use this as an escape hatch if OneGraph does not yet support functionality of the underlying API.
   """
   get(
+    """
+    Additional headers that should be added to the request. They should be sent as a list of key-value pairs, e.g. `[["accept", "application/json"]]`.
+    
+    Note that an accept header provided here will override the `accept` input arg.
+    
+    Currently allowed headers are `accept`, `if-modified-since`, and `if-none-match`. Contact support if you have a header you would like to use.
+    """
+    headers: [[String!]!]
+
     """The Accept header to set in the API."""
     accept: String = "application/json"
 
@@ -6055,7 +6797,7 @@ type SpotifyQuery {
   """
   A list of Spotify featured playlists (shown, for example, on a Spotify player's 'Browse' tab).
   """
-  featuredPlaylists(limit: Int): [SpotifyPlaylist!]
+  featuredPlaylists(offset: Int, limit: Int): [SpotifyPlaylist!]
   me: SpotifyCurrentUserProfile
   artist(
     """The artist id"""
@@ -6183,6 +6925,9 @@ input OneGraphServiceUserIds {
   """User id for Intercom"""
   intercom: String
 
+  """User id for Jira"""
+  jira: String
+
   """User id for Mailchimp"""
   mailchimp: String
 
@@ -6206,6 +6951,9 @@ input OneGraphServiceUserIds {
 
   """User id for Salesforce"""
   salesforce: String
+
+  """User id for Salesloft"""
+  salesloft: String
 
   """User id for Sanity"""
   sanity: String
@@ -6533,7 +7281,10 @@ union OneGraphUserAuthCustomData = OneGraphUserAuthCustomDataForOneGraph
 """A user auth associated with an access token"""
 type OneGraphUserAuth {
   """Service that the auth belongs to."""
-  service: OneGraphServiceEnum!
+  service: OneGraphServiceEnum! @deprecated(reason: "Use `serviceInfo` instead")
+
+  """Service that the auth belongs to."""
+  serviceInfo: OneGraphServiceInfo!
 
   """Unique id for the logged-in entity on the service."""
   foreignUserId: String!
@@ -8716,14 +9467,7 @@ type MuxVideoSimulcastTarget {
   """Arbitrary metadata set by you when creating the asset."""
   passthrough: String
 
-  """
-  The current status of the simulcast target. See Statuses below for detailed description.
-    * `idle`: Default status. When the parent live stream is in disconnected status, simulcast targets will be idle state.
-    * `starting`: The simulcast target transitions into this state when the parent live stream transition into connected state.
-    * `broadcasting`: The simulcast target has successfully connected to the third party live streaming service and is pushing video to that service.
-    * `errored`: The simulcast target encountered an error either while attempting to connect to the third party live streaming service, or mid-broadcasting. Compared to other errored statuses in the Mux Video API, a simulcast may transition back into the broadcasting state if a connection with the service can be re-established.
-  
-  """
+  "The current status of the simulcast target. See Statuses below for detailed description.\n  * `idle`: Default status. When the parent live stream is in disconnected status, simulcast targets will be idle state.\n  * `starting`: The simulcast target transitions into this state when the parent live stream transition into connected state.\n  * `broadcasting`: The simulcast target has successfully connected to the third party live streaming service and is pushing video to that service.\n  * `errored`: The simulcast target encountered an error either while attempting to connect to the third party live streaming service, or mid-broadcasting. Compared to other errored statuses in the Mux Video API, a simulcast may transition back into the broadcasting state if a connection with the service can be re-established.\n"
   status: MuxVideoSimulcastTargetStatusEnum
 
   """
@@ -8969,13 +9713,7 @@ enum MuxVideoAssetStaticRenditionsStatusEnum {
 }
 
 type MuxVideoAssetStaticRenditions {
-  """
-  * `ready`: All MP4s are downloadable
-  * `preparing`: We are preparing the MP4s
-  * `disabled`: MP4 support was not requested or has been removed
-  * `errored`: There was a Mux internal error that prevented the MP4s from being created
-  
-  """
+  "* `ready`: All MP4s are downloadable\n* `preparing`: We are preparing the MP4s\n* `disabled`: MP4 support was not requested or has been removed\n* `errored`: There was a Mux internal error that prevented the MP4s from being created\n"
   status: MuxVideoAssetStaticRenditionsStatusEnum
 
   """"""
@@ -12650,6 +13388,7 @@ enum OneGraphServiceEnumArg {
   GOOGLE_TRANSLATE
   HUBSPOT
   INTERCOM
+  JIRA
   MAILCHIMP
   MEETUP
   NETLIFY
@@ -12658,6 +13397,7 @@ enum OneGraphServiceEnumArg {
   PRODUCT_HUNT
   QUICKBOOKS
   SALESFORCE
+  SALESLOFT
   SANITY
   SHOPIFY_ADMIN
   SHOPIFY_STOREFRONT
@@ -12914,6 +13654,34 @@ type OneGraphLinkedNodesConnection {
   nodes: [OneGraphNode!]!
 }
 
+type OneGraphServiceOAuthConfiguration {
+  """
+  The Authorization URI for obtaining an authorization grant,
+                  according to RFC6749 Section 3.1
+  """
+  authorizationUri: String!
+
+  """
+  The Token URI for obtaining an access token by presenting its authorization grant or refresh token, according to RFC6749 Section 3.2
+  """
+  tokenUri: String!
+
+  """
+  The registered client identifier for the service, issued by the service upon registration, according to RFC6749 Section 2.2
+  """
+  clientId: String!
+
+  """
+  The registered client secret, issued by the service upon registration, according to RFC6749 Section 2.3 
+  """
+  clientSecret: String!
+
+  """
+  OAuth scopes supported by the service, according to RFC6749 Section 1.4
+  """
+  scopes: [OneGraphServiceScope!]!
+}
+
 """The style for the logo svg."""
 enum OneGraphAppLogoStyleEnum {
   DEFAULT
@@ -12933,8 +13701,12 @@ type OneGraphServiceScope {
 
 """Information about a service that OneGraph supports."""
 type OneGraphServiceInfo implements OneGraphNode {
+  id: String!
   service: OneGraphServiceEnum!
   friendlyServiceName: String!
+
+  """GraphQL field identifying the service in the schema"""
+  graphQLField: String!
 
   """
   Service string that can be provided in the URL when going through the oauth flow.
@@ -12960,10 +13732,21 @@ type OneGraphServiceInfo implements OneGraphNode {
   """
   typePrefix: String!
 
+  """The GraphQL field in the schema's root query for this service."""
+  field: String!
+
   """
   The name of the root field for this service in the GraphQL schema, e.g. `gitHub`.
   """
   fieldName: String!
+
+  """The OAuth2 configuration for the service"""
+  oauthConfig: OneGraphServiceOAuthConfiguration
+
+  """
+  The redirect url that the user should add in the OAuth config on the service's settings page (external to Netlify).
+  """
+  oauthCallbackURL: String
   oneGraphLinkedNodes(
     """Filter the connected nodes that are returned by service or typename."""
     filter: OneGraphLinkedNodesConnectionFilter
@@ -12975,6 +13758,7 @@ type OneGraphServiceInfo implements OneGraphNode {
 
 """Services supported by OneGraph."""
 enum OneGraphServiceEnum {
+  CUSTOM
   ADROLL
   ASANA
   BOX
@@ -13001,6 +13785,7 @@ enum OneGraphServiceEnum {
   GOOGLE_TRANSLATE
   HUBSPOT
   INTERCOM
+  JIRA
   MAILCHIMP
   MEETUP
   NETLIFY
@@ -13009,6 +13794,7 @@ enum OneGraphServiceEnum {
   PRODUCT_HUNT
   QUICKBOOKS
   SALESFORCE
+  SALESLOFT
   SANITY
   SHOPIFY_ADMIN
   SHOPIFY_STOREFRONT
@@ -13051,8 +13837,10 @@ enum OneGraphServiceEnum {
 
 """Information about a service."""
 type OneGraphServiceMetadata {
+  id: String!
   service: OneGraphServiceEnum!
   friendlyServiceName: String!
+  graphQLField: String!
   isLoggedIn: Boolean!
   usedTestFlow: Boolean!
   foreignUserId: String
@@ -13098,6 +13886,7 @@ type OneGraphServicesMetadata {
   googleTranslate: OneGraphServiceMetadata!
   hubspot: OneGraphServiceMetadata!
   intercom: OneGraphServiceMetadata!
+  jira: OneGraphServiceMetadata!
   mailchimp: OneGraphServiceMetadata!
   meetup: OneGraphServiceMetadata!
   netlify: OneGraphServiceMetadata!
@@ -13106,6 +13895,7 @@ type OneGraphServicesMetadata {
   productHunt: OneGraphServiceMetadata!
   quickbooks: OneGraphServiceMetadata!
   salesforce: OneGraphServiceMetadata!
+  salesloft: OneGraphServiceMetadata!
   sanity: OneGraphServiceMetadata!
   shopifyAdmin: OneGraphServiceMetadata!
   shopifyStorefront: OneGraphServiceMetadata!
