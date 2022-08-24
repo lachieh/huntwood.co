@@ -1,3 +1,5 @@
+/* eslint-disable */
+// @ts-nocheck
 // GENERATED VIA NETLIFY AUTOMATED DEV TOOLS, EDIT WITH CAUTION!
 
 export type NetlifyGraphFunctionOptions = {
@@ -68,7 +70,7 @@ Use this as an escape hatch if OneGraph does not yet support functionality of th
   /**
    * Any errors from the function will be returned here
    */
-  errors: Array<GraphQLError>
+  errors?: Array<GraphQLError>
 }
 
 /**
@@ -95,63 +97,63 @@ export type FindTracks = {
      * The root for Spotify queries
      */
     spotify: {
-      search: {
-        tracks: Array<{
+      search?: {
+        tracks?: Array<{
           /**
            * The name of the track.
            */
-          name: string
+          name?: string
           /**
            * The Spotify URI for the track.
            */
-          uri: string
+          uri?: string
           /**
            * A link to the Web API endpoint providing full details of the track.
            */
-          href: string
+          href?: string
           /**
            * The track length in milliseconds.
            */
-          durationMs: number
+          durationMs?: number
           /**
            * The artists who performed the track. Each artist object includes a link in href to more detailed information about the artist.
            */
-          artists: Array<{
+          artists?: Array<{
             /**
              * The name of the artist.
              */
-            name: string
+            name?: string
           }>
           /**
            * The album on which the track appears. The album object includes a link in href to full information about the album.
            */
-          album: {
+          album?: {
             /**
              * The name of the album. In case of an album takedown, the value may be an empty string.
              */
-            name: string
+            name?: string
             /**
              * The cover art for the album in various sizes, widest first.
              */
-            images: Array<{
+            images?: Array<{
               /**
                * The image height in pixels. If unknown: `null` or not returned.
                */
-              height: number
+              height?: number
               /**
                * The image width in pixels. If unknown: `null` or not returned.
                */
-              width: number
+              width?: number
               /**
                * The source URL of the image.
                */
-              url: string
+              url?: string
             }>
           }
           /**
            * A link to a 30 second preview (MP3 format) of the track. Can be null
            */
-          previewUrl: string
+          previewUrl?: string
         }>
       }
     }
@@ -159,7 +161,7 @@ export type FindTracks = {
   /**
    * Any errors from the function will be returned here
    */
-  errors: Array<GraphQLError>
+  errors?: Array<GraphQLError>
 }
 
 /**
@@ -169,3 +171,18 @@ export function fetchFindTracks(
   variables: FindTracksInput,
   options?: NetlifyGraphFunctionOptions,
 ): Promise<FindTracks>
+
+export interface Functions {
+  /**
+   * An empty mutation to start from
+   */
+  executeAddToPlaylist: typeof executeAddToPlaylist
+  /**
+   * An example query to start with.
+   */
+  fetchFindTracks: typeof fetchFindTracks
+}
+
+export const functions: Functions
+
+export default functions
