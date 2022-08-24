@@ -27,14 +27,14 @@ export const loader: LoaderFunction = async ({ request, context }) => {
   }
 
   return json(
-    data.spotify.search.tracks.map(
+    (data.spotify?.search?.tracks ?? []).map(
       (song): Song => ({
-        uri: song.uri,
-        name: song.name,
-        artists: song.artists.map((artist) => artist.name),
-        album: song.album.name,
-        image: song.album.images[0].url,
-        previewUrl: song.previewUrl,
+        uri: song.uri ?? '',
+        name: song.name ?? '',
+        artists: (song.artists ?? []).map((artist) => artist.name ?? '') ?? '',
+        album: song.album?.name ?? '',
+        image: song.album?.images?.[0].url ?? '',
+        previewUrl: song.previewUrl ?? '',
       }),
     ),
     200,
