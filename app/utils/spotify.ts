@@ -1,14 +1,15 @@
 import type { Song } from '~/routes/api/song'
 import SpotifyWebApi from 'spotify-web-api-node'
+import 'isomorphic-fetch'
 
 // credentials are optional
 const spotifyApi = new SpotifyWebApi({
   clientId: process.env.SPOTIFY_CLIENT_ID,
   clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
   redirectUri: 'http://www.example.com/callback',
-  accessToken: process.env.SPOTIFY_ACCESS_TOKEN,
 })
 export async function searchTracks(query: string) {
+  await updateToken()
   const response = await spotifyApi.searchTracks(query, { limit: 3 })
   return response.body
 }
@@ -37,4 +38,22 @@ export async function addSongsToPlaylist(
   )
   console.info('added songs to playlist')
   return response.statusCode
+}
+
+export async function updateToken() {
+  const refreshToken = process.env.SPOTIFY_REFRESH_TOKEN
+  const clientId = process.env.SPOTIFY_CLIENT_ID
+  const clientSecret = process.env.SPOTIFY_CLIENT_SECRET
+  const auth = Buffer.from(clientId + ':' + clientSecret).toString('base64')
+
+  const response = await fetch('https://accounts.spotify.com/api/token', {
+    method: 'POST',
+    body: `grant_type=refresh_token&refresh_token=${refreshToken}`,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Authorization: `Basic ${auth}`,
+    },
+  })
+  const body = await response.json()
+  spotifyApi.setAccessToken(body.access_token)
 }

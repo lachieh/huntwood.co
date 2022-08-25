@@ -1,6 +1,6 @@
 import type { Song } from '~/routes/api/song'
 import { useRef, useState } from 'react'
-import { useFetcher } from 'remix'
+import { redirect, useFetcher } from 'remix'
 import Input from '~/components/Input'
 import Text from '~/components/Text'
 
@@ -24,10 +24,10 @@ const SpotifyField = ({ onChange, value = [] }: Props) => {
     const input =
       (formRef.current?.elements?.namedItem('q') as HTMLInputElement) || null
     setCurrentSearchTerm(input.value)
-    ref.current = setTimeout(
-      () => songs.submit(formRef.current),
-      500,
-    ) as unknown as number
+    ref.current = setTimeout(() => {
+      songs.submit(formRef.current)
+      ref.current = undefined
+    }, 500) as unknown as number
   }
 
   const getNewSongs = (song: Song) => {
@@ -87,7 +87,7 @@ const SpotifyField = ({ onChange, value = [] }: Props) => {
       </div>
       {songs.data &&
         (responseIsValid(songs.data) ? (
-          !songs.data.length ? (
+          !songs.data.length && !ref.current ? (
             currentSearchTerm && 'No songs found'
           ) : (
             <div className="flex flex-col">

@@ -42,14 +42,14 @@ export const action: ActionFunction = async ({ request, params, context }) => {
       console.error('Error adding songs to playlist', e)
     }
   }
-  try {
-    console.info('Email from: ' + submission.names)
-    const html = rsvpTemplate(submission)
-    const mailResult = await sendMail(html, 'New RSVP from ' + submission.names)
-    console.info('Sendgrid: ' + mailResult)
-  } catch (e) {
-    console.error('Failed to send email', e, submission)
-  }
+  // try {
+  //   console.info('Email from: ' + submission.names)
+  //   const html = rsvpTemplate(submission)
+  //   const mailResult = await sendMail(html, 'New RSVP from ' + submission.names)
+  //   console.info('Sendgrid: ' + mailResult)
+  // } catch (e) {
+  //   console.error('Failed to send email', e, submission)
+  // }
   if (statusCode === 200) {
     return json({ success: true })
   }
