@@ -1,6 +1,6 @@
 import type { LoaderFunction } from 'remix'
 import { json } from 'remix'
-import NetlifyGraph from 'netlify/functions/netlifyGraph'
+import { searchTracks } from '~/utils/spotify'
 
 export interface Song {
   uri: string
@@ -8,7 +8,6 @@ export interface Song {
   artists: string[]
   album: string
   image: string
-  previewUrl: string
 }
 
 export const loader: LoaderFunction = async ({ request, context }) => {
@@ -17,26 +16,22 @@ export const loader: LoaderFunction = async ({ request, context }) => {
 
   if (!query) return json([], 404)
 
-  const { errors, data } = await NetlifyGraph.fetchFindTracks(
-    { query },
-    { accessToken: context.netlifyGraphToken },
-  )
-
-  if (errors) {
-    return json({ error: errors }, 500)
+  try {
+    const response = await searchTracks(query)
+    return json(
+      response.tracks?.items.map(
+        (song): Song => ({
+          uri: song.uri ?? '',
+          name: song.name ?? '',
+          artists:
+            (song.artists ?? []).map((artist) => artist.name ?? '') ?? '',
+          album: song.album?.name ?? '',
+          image: song.album?.images?.[0].url ?? '',
+        }),
+      ),
+      200,
+    )
+  } catch (error) {
+    return json({ error }, 500)
   }
-
-  return json(
-    (data.spotify?.search?.tracks ?? []).map(
-      (song): Song => ({
-        uri: song.uri ?? '',
-        name: song.name ?? '',
-        artists: (song.artists ?? []).map((artist) => artist.name ?? '') ?? '',
-        album: song.album?.name ?? '',
-        image: song.album?.images?.[0].url ?? '',
-        previewUrl: song.previewUrl ?? '',
-      }),
-    ),
-    200,
-  )
 }
