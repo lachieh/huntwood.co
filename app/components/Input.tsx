@@ -14,7 +14,7 @@ interface Props
 const Input = ({ bg = 'light', loading = false, ...props }: Props) => {
   const lightMode = bg === 'dark'
   return (
-    <div className="w-full relative mt-1">
+    <div className="w-full relative mt-1 text-green-dark">
       <input
         className={oneLine`text-copy px-3 py-2 w-full
         shadow-lg shadow-blue-light/10

@@ -1,15 +1,16 @@
-import type { ActionFunction, LoaderFunction } from 'remix'
+import type { ActionFunction, LoaderFunction } from '@remix-run/node'
 import type { RSVPData } from '~/routes/rsvp'
 import type { Guest } from '~/routes/rsvp'
+import { redirect, json } from '@remix-run/node'
+import { useLoaderData } from '@remix-run/react'
 import { useEffect } from 'react'
-import { redirect, json, useLoaderData } from 'remix'
 import Card from '~/components/Card'
+import { Markdown } from '~/components/Markdown'
 import RSVPForm from '~/components/RSVPForm'
 import { rsvpToken } from '~/cookies'
 import { setUser, setPage } from '~/utils/analytics'
 import { rsvpTemplate, sendMail } from '~/utils/mailService'
-import { addRsvp, addSongs, getGuests } from '~/utils/sheetsService'
-import { addSongsToPlaylist } from '~/utils/spotify'
+import { addRsvp, getGuests } from '~/utils/sheetsService'
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const cookieHeader = request.headers.get('Cookie')
@@ -30,26 +31,14 @@ export const action: ActionFunction = async ({ request, params, context }) => {
     ((await request.formData()).get('json') as string) || '{}',
   ) as RSVPData
   const statusCode = await addRsvp(submission)
-  if (submission.songs?.length) {
-    try {
-      await addSongs(submission.songs, submission.names)
-    } catch (e) {
-      console.error('Error adding songs to sheet', e)
-    }
-    try {
-      await addSongsToPlaylist(submission.songs, context.netlifyGraphToken)
-    } catch (e) {
-      console.error('Error adding songs to playlist', e)
-    }
+  try {
+    console.info('Email from: ' + submission.names)
+    const html = rsvpTemplate(submission)
+    const mailResult = await sendMail(html, 'New RSVP from ' + submission.names)
+    console.info('Sendgrid: ' + mailResult)
+  } catch (e) {
+    console.error('Failed to send email', e, submission)
   }
-  // try {
-  //   console.info('Email from: ' + submission.names)
-  //   const html = rsvpTemplate(submission)
-  //   const mailResult = await sendMail(html, 'New RSVP from ' + submission.names)
-  //   console.info('Sendgrid: ' + mailResult)
-  // } catch (e) {
-  //   console.error('Failed to send email', e, submission)
-  // }
   if (statusCode === 200) {
     return json({ success: true })
   }
@@ -69,7 +58,7 @@ export default function RSVP() {
     setUser(guest)
   }, [guest])
   return (
-    <div className="mt-8">
+    <div className="mt-8 mb-auto w-[954px] max-w-full">
       <Card front={<RSVPForm guest={guest} onSuccess={() => {}} />} />
     </div>
   )

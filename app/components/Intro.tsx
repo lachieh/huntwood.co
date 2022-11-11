@@ -1,96 +1,31 @@
-import type { MotionProps } from 'framer-motion'
 import { motion } from 'framer-motion'
-import { useLocation } from 'remix'
 
 type Props = {}
 
 const Intro = (props: Props) => {
   const ssr = typeof window === 'undefined'
-  const notHome = useLocation().pathname !== '/'
-  if (ssr && notHome) return null
-
-  const windowWidth = ssr ? null : window?.innerWidth
-  const windowHeight = ssr ? null : window?.innerHeight
-
-  const baseAnimationProps = {
-    transition: {
-      duration: 1,
-      ease: 'easeInOut',
-      delay: 1,
-      x: {
-        delay: 2,
-        duration: 1,
-        ease: 'easeInOut',
-      },
-    },
-  }
-
-  const leftProps: MotionProps = {
-    ...baseAnimationProps,
-    initial: {
-      right: '-5em',
-      y: '-50%',
-    },
-    animate: {
-      right: '-3.5em',
-      y: '-50%',
-    },
-  }
-
-  const rightProps: MotionProps = {
-    ...baseAnimationProps,
-    initial: {
-      left: '-5.9em',
-      y: '-50%',
-    },
-    animate: {
-      left: '-3.81em',
-      y: '-50%',
-    },
-  }
+  if (ssr) return null
 
   return (
     <motion.div
-      initial={
-        notHome
-          ? { height: '64px', visibility: 'hidden' }
-          : {
-              height: windowHeight ? `${windowHeight}px` : '100vh',
-              visibility: 'visible',
-            }
-      }
-      animate={{ height: '64px', visibility: 'hidden' }}
-      transition={{
-        duration: 1,
-        delay: 2.5,
-        ease: 'easeInOut',
-        visibility: { duration: 0, delay: 3.5, ease: 'linear' },
-      }}
-      className="flex flex-col items-center justify-center h-screen w-full relative bg-white -mt-16 z-30"
+      initial={{ opacity: 1, visibility: 'visible' }}
+      animate={{ opacity: 0, visibility: 'hidden' }}
+      transition={{ duration: 1, delay: 3, visibility: { delay: 4 } }}
+      className="flex items-center justify-center absolute top-0 left-0 h-screen w-full bg-white z-20 opacity-1"
     >
-      <motion.h1
-        initial={{ fontSize: windowWidth ? `${windowWidth * 0.08}px` : '64px' }}
-        animate={{ fontSize: '32px' }}
-        transition={{ duration: 1, delay: 2.5, ease: 'easeInOut' }}
-        className="text-[8.34vw] leading-none"
+      <motion.span
+        style={{ opacity: 0 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5, duration: 1 }}
       >
-        <motion.span className="block absolute top-0 left-0 h-full w-1/2 text-green-mid overflow-hidden">
-          <motion.span
-            {...leftProps}
-            className="absolute pb-[0.1em] top-1/2 -translate-y-1/2 right-[-3.5em] whitespace-nowrap"
-          >
-            Mitchell &amp; Natalie
-          </motion.span>
-        </motion.span>
-        <motion.span className="block absolute top-0 left-1/2 h-full w-1/2 text-blue-mid overflow-hidden">
-          <motion.span
-            {...rightProps}
-            className="absolute pb-[0.1em] top-1/2 -translate-y-1/2 left-[-3.81em] whitespace-nowrap"
-          >
-            Mitchell &amp; Natalie
-          </motion.span>
-        </motion.span>
-      </motion.h1>
+        <img
+          src="/assets/images/logo-stack.png"
+          alt="Kate & Fletcher"
+          className="max-w-md w-full"
+          width={800}
+        />
+      </motion.span>
     </motion.div>
   )
 }

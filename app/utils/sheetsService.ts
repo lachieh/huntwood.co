@@ -1,7 +1,5 @@
-import type { Song } from '~/routes/api/song'
 import type { Guest, RSVPData } from '~/routes/rsvp'
 import { google } from 'googleapis'
-import * as spotify from '~/utils/spotify'
 
 export interface GoogleApiKey {
   private_key: string
@@ -84,32 +82,6 @@ export const addRsvp = async (data: RSVPData): Promise<number> => {
           ],
         ],
       },
-    })
-    return response.status
-  } catch (e) {
-    console.error(e)
-    return 500
-  }
-}
-
-export const addSongs = async (
-  songs: Song[],
-  guest: string,
-): Promise<number> => {
-  if (!songs.length) return 200
-  try {
-    const sheets = await getSheetsApi()
-    const values = songs.map((song) => [
-      spotify.getSheetsLink(song, true),
-      song.artists.join(', '),
-      song.album,
-      guest,
-    ])
-    const response = await sheets.spreadsheets.values.append({
-      spreadsheetId: SHEET_ID,
-      range: "'Playlist Songs'!A2:D",
-      valueInputOption: 'USER_ENTERED',
-      requestBody: { values },
     })
     return response.status
   } catch (e) {

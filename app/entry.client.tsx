@@ -1,6 +1,7 @@
 import * as FullStory from '@fullstory/browser'
-import { hydrate } from 'react-dom'
-import { RemixBrowser } from 'remix'
+import { RemixBrowser } from '@remix-run/react'
+import { startTransition, StrictMode } from 'react'
+import { hydrateRoot } from 'react-dom/client'
 import { changeTitle } from './utils/titleChanger'
 
 try {
@@ -12,6 +13,23 @@ try {
   console.error('Failed to init FullStory', e)
 }
 
-hydrate(<RemixBrowser />, document)
+function hydrate() {
+  startTransition(() => {
+    hydrateRoot(
+      document,
+      <StrictMode>
+        <RemixBrowser />
+      </StrictMode>,
+    )
+  })
+}
 
-changeTitle('Mitch', 'ell & Nat', 'alie')
+if (window.requestIdleCallback) {
+  window.requestIdleCallback(hydrate)
+} else {
+  // Safari doesn't support requestIdleCallback
+  // https://caniuse.com/requestidlecallback
+  window.setTimeout(hydrate, 1)
+}
+
+changeTitle('Hunt', 'er & Hey', 'wood')

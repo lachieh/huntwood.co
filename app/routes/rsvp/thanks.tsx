@@ -9,9 +9,8 @@ export default function Thanks() {
   })
 
   return (
-    <div className="mt-8">
+    <div className="mt-8 mb-auto">
       <Card
-        flourish
         front={
           <div className="flex flex-col justify-center items-center h-full">
             <h2 className="text-center leading-loose mb-4">

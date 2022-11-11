@@ -1,12 +1,10 @@
-import type { Song } from '~/routes/api/song'
 import type { Guest, RSVPData } from '~/routes/rsvp'
+import { useFetcher } from '@remix-run/react'
 import { useMemo, useState } from 'react'
-import { useFetcher } from 'remix'
 import Button from '~/components/Button'
 import Input from '~/components/Input'
 import InputCheckbox from '~/components/InputCheckbox'
 import InputRadio from '~/components/InputRadio'
-import SpotifyField from '~/components/SpotifyField'
 import Text from '~/components/Text'
 import Textarea from '~/components/Textarea'
 
@@ -32,7 +30,6 @@ const RSVPForm = ({ guest }: Props) => {
     [guest],
   )
   const [data, setData] = useState<RSVPData>(rsvp.data ?? initialData)
-  const [songs, setSongs] = useState<Song[]>()
   const many = !!guest?.guest2
   const pronoun = many ? 'We' : 'I'
   const allAnswered = many
@@ -82,7 +79,7 @@ const RSVPForm = ({ guest }: Props) => {
   }
 
   return (
-    <>
+    <div>
       <p className="text-center">
         <Text size="lg">{guest?.names}</Text>
       </p>
@@ -169,16 +166,6 @@ const RSVPForm = ({ guest }: Props) => {
       </div>
       {(allAttending || someAttending) && (
         <>
-          <label className="inline-flex flex-row mb-6 items-center">
-            <InputCheckbox
-              onChange={(e) => update('shuttle', e.target.value === 'true')}
-              value="true"
-            />
-            <Text size="md" className="ml-2">
-              {pronoun} will require use of the shuttle bus from the parking lot
-              to the venue
-            </Text>
-          </label>
           <div>
             <Text size="md">Contact Information (in case of wet weather)</Text>
           </div>
@@ -208,6 +195,17 @@ const RSVPForm = ({ guest }: Props) => {
             </Text>
             <Textarea onChange={(e) => update('dietary', e.target.value)} />
           </label>
+        </>
+      )}
+      {noneAttending && (
+        <>
+          <Text as="p" size="md" className="mb-6">
+            We're sorry you can't make it! Thanks for letting us know.
+          </Text>
+        </>
+      )}
+      {allAnswered && (
+        <>
           <label className="flex flex-col mb-6 w-full">
             <Text size="md">
               Would you like to tell us anything else or leave us a message?
@@ -215,50 +213,25 @@ const RSVPForm = ({ guest }: Props) => {
             </Text>
             <Textarea onChange={(e) => update('message', e.target.value)} />
           </label>
-          <Text as="p" size="md" className="mb-6">
-            One last thing ☝️. If there is a song (or songs) you would like to
-            hear played on the night, please search for it below. Add as many as
-            you like! 🎶💃🏻🕺🏼
-          </Text>
-          <SpotifyField
-            value={songs || []}
-            onChange={(songs) => setSongs(songs)}
-          />
+          <rsvp.Form action={`/rsvp/${guest?.id}`} method="post">
+            <input
+              type="hidden"
+              name="json"
+              value={JSON.stringify({ ...data })}
+            />
+            <Button
+              variant="solid"
+              color="green-light"
+              type="submit"
+              style={{ width: '100%' }}
+              disabled={!allAnswered || rsvp.state === 'submitting'}
+            >
+              {rsvp.state === 'submitting' ? 'Submitting...' : 'Submit'}
+            </Button>
+          </rsvp.Form>
         </>
       )}
-      {noneAttending && (
-        <>
-          <Text as="p" size="md" className="mb-6">
-            Thanks for letting us know. We'd still love if you could contribute
-            to our day 🤗 so if there is a song (or songs) you would like us to
-            play on the night, please search for it below. Add as many as you
-            like! 🎶💃🏻🕺🏼
-          </Text>
-          <SpotifyField
-            value={songs || []}
-            onChange={(songs) => setSongs(songs)}
-          />
-        </>
-      )}
-      {allAnswered && (
-        <rsvp.Form action={`/rsvp/${guest?.id}`} method="post">
-          <input
-            type="hidden"
-            name="json"
-            value={JSON.stringify({ ...data, songs })}
-          />
-          <Button
-            variant="solid"
-            color="green-light"
-            type="submit"
-            style={{ width: '100%' }}
-            disabled={!allAnswered || rsvp.state === 'submitting'}
-          >
-            {rsvp.state === 'submitting' ? 'Submitting...' : 'Submit'}
-          </Button>
-        </rsvp.Form>
-      )}
-    </>
+    </div>
   )
 }
 

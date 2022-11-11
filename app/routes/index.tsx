@@ -1,6 +1,7 @@
-import type { LoaderFunction } from 'remix'
+import type { LoaderFunction } from '@remix-run/node'
+import { Link, useLocation } from '@remix-run/react'
+import { oneLine } from 'common-tags'
 import React, { useEffect, useRef, useState } from 'react'
-import { Link, useLocation } from 'remix'
 import Button from '~/components/Button'
 import Card from '~/components/Card'
 import RSVPLookup from '~/components/RSVPLookup'
@@ -32,50 +33,43 @@ export default function Index() {
   }, [location, setFlipped])
 
   return (
-    <div className="mt-[80vh]">
+    <>
       <div ref={rsvpMarker} />
       <Card
-        flourish
         flipped={flipped}
+        color="bg-tan-light text-tan-light"
         front={
           <div className="flex flex-col justify-center items-center h-full">
-            <h2 className="text-center leading-loose mb-4">
-              <Text>Celebrating the wedding of</Text>
-              <br />
-              <Text size="lg">
-                Natalie Michelle Roberts &amp;
-                <br />
-                Mitchell William Heywood
-              </Text>
-            </h2>
-            <div className="mb-4">
-              <Button onClick={() => setFlipped(true)}>Click to RSVP</Button>
+            <div className="max-w-md mx-auto px-[10%] py-16">
+              <img
+                src="/assets/images/logo-stack.png"
+                alt=""
+                className="w-full "
+              />
             </div>
-            <nav className="divide-x divide-copy text-center mb-8">
-              <Link className="pt-1 pb-2 px-4 underline " to="/venue">
-                <Text>Venue</Text>
-              </Link>
-              <Link className="pt-1 pb-2 px-4 underline " to="/registry">
-                <Text>Registry</Text>
-              </Link>
-              <Link className="pt-1 pb-2 px-4 underline " to="/faq">
-                <Text>Q + A</Text>
-              </Link>
-            </nav>
+            <div className="mb-8">
+              <Button onClick={() => setFlipped(true)}>RSVP</Button>
+            </div>
           </div>
         }
         back={
           <>
-            <button
-              onClick={() => setFlipped(false)}
-              className="font-sans absolute top-4 right-4 rounded-full overflow-hidden outline-green-light outline-offset outline-4 focus-visible:[outline-style:solid] transition-[outline-width]"
-            >
-              <img src={close} alt="close" className="w-6 h-6" />
-            </button>
-            <RSVPLookup />
+            <div className="relative">
+              <button
+                onClick={() => setFlipped(false)}
+                className={oneLine`
+                  absolute top-0 right-0 overflow-hidden
+                  opacity-30 hover:opacity-60 rounded-full
+                  outline-green-light outline-offset outline-4 focus-visible:[outline-style:solid] transition-[outline-width]
+                `}
+              >
+                <img src={close} alt="close" className="w-6 h-6" />
+              </button>
+              <RSVPLookup />
+            </div>
           </>
         }
       />
-    </div>
+    </>
   )
 }

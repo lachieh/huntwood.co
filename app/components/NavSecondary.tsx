@@ -1,15 +1,15 @@
+import type { NavLinkProps } from '@remix-run/react'
 import type { MotionProps } from 'framer-motion'
-import type { NavLinkProps } from 'remix'
+import { NavLink } from '@remix-run/react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { useMatch } from 'react-router'
-import { NavLink } from 'remix'
 
 const ActiveLink = ({ children, ...props }: NavLinkProps) => {
   return (
     <NavLink
       {...props}
       className={({ isActive }) =>
-        (isActive && `underline underline-offset-2`) || ''
+        (isActive && props.to !== '/#rsvp' && `underline underline-offset-2`) ||
+        ''
       }
     >
       {children}
@@ -20,8 +20,6 @@ const ActiveLink = ({ children, ...props }: NavLinkProps) => {
 type Props = {}
 
 const NavSecondary = (props: Props) => {
-  const isHome = useMatch({ path: '/', end: true })
-
   const animation: MotionProps = {
     transition: { duration: 0.5, ease: 'easeInOut' },
     initial: { opacity: 0, y: -20 },
@@ -30,28 +28,23 @@ const NavSecondary = (props: Props) => {
   }
 
   return (
-    <AnimatePresence exitBeforeEnter>
-      {isHome ? null : (
-        <motion.nav {...animation} className="sticky top-0 z-10">
-          <ul className="flex flex-row items-center justify-center h-9 relative bg-blue-dark text-white divide-x pt-2 pb-2">
-            <li className="px-2 sm:px-4 pb-0.5 leading-none">
-              <ActiveLink to="/">Home</ActiveLink>
-            </li>
-            <li className="px-2 sm:px-4 pb-0.5 leading-none">
-              <ActiveLink to="/venue">Venue</ActiveLink>
-            </li>
-            <li className="px-2 sm:px-4 pb-0.5 leading-none">
-              <ActiveLink to="/registry">Registry</ActiveLink>
-            </li>
-            <li className="px-2 sm:px-4 pb-0.5 leading-none">
-              <ActiveLink to="/faq">Q + A</ActiveLink>
-            </li>
-            <li className="px-2 sm:px-4 pb-0.5 leading-none">
-              <ActiveLink to="/#rsvp">RSVP</ActiveLink>
-            </li>
-          </ul>
-        </motion.nav>
-      )}
+    <AnimatePresence mode="wait">
+      <motion.nav {...animation} className="sticky top-0 z-10">
+        <ul className="flex flex-row items-center justify-center h-9 relative bg-green-dark text-white divide-x pt-2 pb-2">
+          <li className="px-2 sm:px-4 pb-0.5 leading-none">
+            <ActiveLink to="/">Home</ActiveLink>
+          </li>
+          <li className="px-2 sm:px-4 pb-0.5 leading-none">
+            <ActiveLink to="/venue">Venue</ActiveLink>
+          </li>
+          <li className="px-2 sm:px-4 pb-0.5 leading-none">
+            <ActiveLink to="/faq">Q + A</ActiveLink>
+          </li>
+          <li className="px-2 sm:px-4 pb-0.5 leading-none">
+            <ActiveLink to="/#rsvp">RSVP</ActiveLink>
+          </li>
+        </ul>
+      </motion.nav>
     </AnimatePresence>
   )
 }

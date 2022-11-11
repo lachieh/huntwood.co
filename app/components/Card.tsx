@@ -1,13 +1,10 @@
 import type { MotionProps } from 'framer-motion'
 import type { PropsWithChildren } from 'react'
+import { oneLine } from 'common-tags'
 import { motion } from 'framer-motion'
-import topLeft from '~/images/corner-top-left.svg'
-import topRight from '~/images/corner-top-right.svg'
-import flourishLeft from '~/images/flourish-left.svg'
-import flourishRight from '~/images/flourish-right.svg'
 
 type Props = {
-  flourish?: boolean
+  color?: string
   flipped?: boolean
   front?: React.ReactNode
   back?: React.ReactNode
@@ -17,10 +14,9 @@ const Card = ({
   front,
   back,
   children,
-  flourish = false,
+  color,
   flipped = false,
 }: PropsWithChildren<Props>) => {
-  const baseImageClasses = 'w-[56.5%]'
   const frontAnimationProps: MotionProps = {
     variants: {
       visible: {
@@ -39,58 +35,23 @@ const Card = ({
   }
 
   return (
-    <div className="mb-12 relative max-w-[954px] w-[95%] mx-auto [perspective:400vw]">
+    <div className="my-12 relative max-w-[954px] w-[95%] mx-auto [perspective:100vw]">
       <motion.main
         {...frontAnimationProps}
         animate={flipped ? 'hidden' : 'visible'}
-        className="bg-white shadow-xl shadow-black/50 rounded-lg relative z-10 [transform-style:preserve-3d] [backface-visibility:hidden]"
+        className={oneLine`
+          ${color || 'bg-tan-lighter text-tan-light'} 
+          shadow-xl shadow-black/50 rounded-[5em] relative z-10 [transform-style:preserve-3d] [backface-visibility:hidden]
+          [boxShadow:0_5px_5px_3px_rgb(0_0_0_/_50%),inset_0_0_0_4px_currentColor,inset_0_0_0_6px_white]
+          xs:[boxShadow:0_10px_10px_5px_rgb(0_0_0_/_50%),inset_0_0_0_10px_currentColor,inset_0_0_0_15px_white]
+        `}
       >
         <div
-          className={`p-4 ${
-            back ? 'min-h-[94vw] lg:min-h-[954px]' : ''
-          } flex flex-col justify-center`}
+          className={`p-4 flex flex-col justify-center text-green-dark
+          ${back ? 'min-h-[500px]' : ''}
+        `}
         >
-          {flourish && (
-            <>
-              <img className="w-full sm:hidden" src={flourishLeft} alt="" />
-              <div className="pointer-events-none hidden sm:flex absolute top-4 left-4 w-[calc(100%_-_2em)]">
-                <img
-                  src={topLeft}
-                  alt=""
-                  className={`${baseImageClasses} -mr-[6.5%]`}
-                />
-                <img
-                  src={topRight}
-                  alt=""
-                  className={`${baseImageClasses} -ml-[6.5%]`}
-                />
-              </div>
-            </>
-          )}
-          <div
-            className={`${
-              flourish ? 'py-[10%] sm:px-[20%] sm:py-[28%]' : 'p-4'
-            }`}
-          >
-            {children ?? front ?? ''}
-          </div>
-          {flourish && (
-            <>
-              <img className="w-full sm:hidden" src={flourishRight} alt="" />
-              <div className="hidden sm:flex pointer-events-none rotate-180 absolute bottom-4 left-4 w-[calc(100%_-_2em)]">
-                <img
-                  src={topLeft}
-                  alt=""
-                  className={`${baseImageClasses} -mr-[6.5%]`}
-                />
-                <img
-                  src={topRight}
-                  alt=""
-                  className={`${baseImageClasses} -ml-[6.5%]`}
-                />
-              </div>
-            </>
-          )}
+          <div className={`p-[5%] relative`}>{children ?? front ?? ''}</div>
         </div>
       </motion.main>
       <motion.aside
@@ -100,9 +61,11 @@ const Card = ({
           backfaceVisibility: 'hidden',
         }}
         animate={flipped ? 'visible' : 'hidden'}
-        className="bg-blue-dark text-white shadow-xl shadow-black/50 rounded-lg absolute top-0 w-full h-full flex flex-col justify-center items-center [transform-style:preserve-3d] [backface-visibility:hidden]"
+        className={oneLine`
+          bg-green-dark text-white shadow-xl shadow-black/50 rounded-[5em] absolute top-0 w-full h-full flex flex-col justify-center items-center [transform-style:preserve-3d] [backface-visibility:hidden]
+        `}
       >
-        <div className="p-4">{back}</div>
+        <div className="p-8 relative">{back}</div>
       </motion.aside>
     </div>
   )

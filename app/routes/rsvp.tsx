@@ -1,8 +1,7 @@
-import type { ActionFunction } from 'remix'
-import type { Song } from '~/routes/api/song'
+import type { ActionFunction } from '@remix-run/node'
+import { json } from '@remix-run/node'
 import { useEffect } from 'react'
 import { Outlet, useNavigate, useParams } from 'react-router'
-import { json } from 'remix'
 import { rsvpToken } from '~/cookies'
 import { getGuests } from '~/utils/sheetsService'
 
@@ -19,10 +18,8 @@ export interface RSVPData {
   phone: string
   guest1Attending?: boolean
   guest2Attending?: boolean
-  shuttle: boolean
   dietary: string
   message: string
-  songs: Song[]
   success?: boolean
   error?: string
 }

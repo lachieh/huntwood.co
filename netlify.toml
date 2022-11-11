@@ -16,8 +16,5 @@
 
 [[headers]]
   for = "/build/*"
-[headers.values]
-  "Cache-Control" = "public, max-age=31536000, s-maxage=31536000"
-
-[graph]
-  codeGenerator = "netlify-builtin:remix"
+  [headers.values]
+    "Cache-Control" = "public, max-age=31536000, s-maxage=31536000"

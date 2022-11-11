@@ -6,11 +6,11 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: 'sm' | 'md' | 'lg'
   color?:
     | 'green-dark'
-    | 'green-mid'
+    | 'green'
     | 'green-light'
-    | 'blue-light'
-    | 'blue-mid'
-    | 'blue-dark'
+    | 'tan'
+    | 'tan-light'
+    | 'tan-lighter'
     | 'white'
     | 'copy'
   variant?: 'solid' | 'outline'
@@ -34,7 +34,7 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
 // outline-copy/50
 
 const Button = ({
-  color = 'blue-dark',
+  color = 'green-dark',
   variant = 'outline',
   children,
   link = false,
@@ -42,12 +42,12 @@ const Button = ({
   ...props
 }: Props) => {
   const buttonColor = {
-    'green-dark': '[--button-color:rgb(6_103_56)]',
-    'green-mid': '[--button-color:rgb(61_123_81)]',
-    'green-light': '[--button-color:rgb(82_142_128)]',
-    'blue-light': '[--button-color:rgb(39_102_116)]',
-    'blue-mid': '[--button-color:rgb(40_82_100)]',
-    'blue-dark': '[--button-color:rgb(38_62_84)]',
+    'green-dark': '[--button-color:#434134]',
+    green: '[--button-color:#636b53]',
+    'green-light': '[--button-color:#929880]',
+    tan: '[--button-color:#aa8478]',
+    'tan-light': '[--button-color:#ddc7b3]',
+    'tan-lighter': '[--button-color:#fff5ec]',
     white: '[--button-color:rgb(255_255_255)]',
     copy: '[--button-color:#6C6E70]',
   }[color]
@@ -60,10 +60,12 @@ const Button = ({
   }[variant]
   const outline = `outline-offset outline-4 outline-${color}/50 focus-visible:[outline-style:solid] transition-[outline-width]`
 
+  const spacing = 'inline-block text-center py-2 px-5'
+
   if (link) {
     return (
       <Link
-        className={`${buttonColor} ${buttonStyle} ${outline} block text-center pt-1 pb-2 px-5 transition-colors`}
+        className={`${buttonColor} ${buttonStyle} ${outline} ${spacing} transition-colors`}
         {...(props as LinkProps)}
         to={to}
       >
@@ -74,7 +76,7 @@ const Button = ({
 
   return (
     <button
-      className={`${buttonColor} ${buttonStyle} ${outline} pt-1 pb-2 px-5 transition-colors`}
+      className={`${buttonColor} ${buttonStyle} ${outline} ${spacing} transition-colors`}
       {...props}
     >
       {children}

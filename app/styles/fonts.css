@@ -1,12 +1,21 @@
 @font-face {
-  font-family: 'LinLibertine';
-  src: url('/assets/fonts/linlibertine.woff2') format('woff2'),
-       url('/assets/fonts/linlibertine.woff') format('woff');
+  font-family: 'TT Chocolates';
+  src: url('/assets/fonts/tt-chocolates-regular.woff2') format('woff2'),
+       url('/assets/fonts/tt-chocolates-regular.woff') format('woff');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'TT Chocolates';
+  src: url('/assets/fonts/tt-chocolates-medium.woff2') format('woff2'),
+       url('/assets/fonts/tt-chocolates-medium.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 body {
-  font-family: LinLibertine, Georgia, 'Times New Roman', Times, serif;
+  font-family: 'TT Chocolates', Gotham, 'Arial', sans-serif;
 }

@@ -1,15 +1,25 @@
+const colors = require('tailwindcss/colors')
+
 module.exports = {
   content: ['./app/**/*.{js,jsx,ts,tsx}'],
   theme: {
+    colors: {
+      green: {
+        dark: '#434134',
+        DEFAULT: '#636b53',
+        light: '#929880',
+      },
+      tan: {
+        DEFAULT: '#aa8478',
+        light: '#ddc7b3',
+        lighter: '#fff5ec',
+      },
+      white: colors.white,
+      black: colors.black,
+    },
     extend: {
-      colors: {
-        'green-dark': 'rgb(6 103 56)',
-        'green-mid': 'rgb(61 123 81)',
-        'green-light': 'rgb(82 142 128)',
-        'blue-light': 'rgb(39 102 116)',
-        'blue-mid': 'rgb(40 82 100)',
-        'blue-dark': 'rgb(38 62 84)',
-        copy: '#6C6E70',
+      screens: {
+        xs: '400px',
       },
     },
   },

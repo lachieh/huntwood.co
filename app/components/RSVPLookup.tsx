@@ -1,6 +1,6 @@
 import type { Guest } from '~/routes/rsvp'
+import { useFetcher, useLoaderData } from '@remix-run/react'
 import { useEffect } from 'react'
-import { useFetcher, useLoaderData } from 'remix'
 import Button from '~/components/Button'
 import Input from '~/components/Input'
 import Text from '~/components/Text'
@@ -25,10 +25,9 @@ const RSVPForm = (props: Props) => {
       method="post"
       action="/rsvp"
     >
-      <br />
       <div className="text-white">
         <div className="mb-4">
-          <div className="text-center">
+          <div className="text-center mb-2">
             <Text as="h2" size="lg">
               RSVP
             </Text>
@@ -51,7 +50,7 @@ const RSVPForm = (props: Props) => {
           <div className="mb-4">
             <Text size="sm">
               Uh oh! We can&rsquo;t find your invite! Give it another go with
-              the name on your invite or contact Mitchell or Natalie.
+              the name on your invite or contact Kate or Fletcher.
             </Text>
           </div>
         )}
@@ -59,7 +58,7 @@ const RSVPForm = (props: Props) => {
           <div className="mb-4">
             <Text size="sm">
               Looks like we found a few guests with that name. Give it another
-              go with the name on your invite or contact Mitchell or Natalie.
+              go with the name on your invite or contact Kate or Fletcher.
             </Text>
           </div>
         )}
@@ -84,8 +83,8 @@ const RSVPForm = (props: Props) => {
             </div>
             <div className="mt-4">
               <Button
-                variant="solid"
-                color="green-dark"
+                variant="outline"
+                color="green-light"
                 style={{ width: '100%' }}
                 to={`/rsvp/${guestInfo.id}`}
                 link
@@ -95,7 +94,7 @@ const RSVPForm = (props: Props) => {
               <div className="text-center mt-4">
                 <Text size="sm">
                   Not you? Try again with the name on your invite or contact
-                  Mitchell or Natalie.
+                  Kate&nbsp;or&nbsp;Fletcher.
                 </Text>
               </div>
             </div>

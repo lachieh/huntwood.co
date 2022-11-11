@@ -1,10 +1,15 @@
+import type { MetaFunction, LinksFunction } from '@remix-run/node'
 import type { MotionProps } from 'framer-motion'
-import type { MetaFunction, LinksFunction } from 'remix'
+import { useLocation } from '@remix-run/react'
+import {
+  Links,
+  LiveReload,
+  Meta,
+  Scripts,
+  ScrollRestoration,
+} from '@remix-run/react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useOutlet } from 'react-router'
-import { useLocation } from 'remix'
-import { Links, LiveReload, Meta, Scripts, ScrollRestoration } from 'remix'
-import HeroImage from '~/components/HeroImage'
 import Intro from '~/components/Intro'
 import Nav from '~/components/Nav'
 import NavSecondary from '~/components/NavSecondary'
@@ -18,15 +23,15 @@ export const links: LinksFunction = () => [
 
 export const meta: MetaFunction = () => ({
   charset: 'utf-8',
-  title: 'Mitchalie',
+  title: 'Kate & Fletcher',
   viewport: 'width=device-width,initial-scale=1',
 })
 
 export const pageAnimation: MotionProps = {
   transition: { duration: 0.5, ease: 'easeInOut' },
-  initial: { x: '-100%', rotate: '-10deg' },
-  animate: { x: '0', rotate: '0deg' },
-  exit: { x: '100%', rotate: '10deg' },
+  initial: { x: '-100%', rotate: '-10deg', opacity: 0 },
+  animate: { x: '0', rotate: '0deg', opacity: 1 },
+  exit: { x: '100%', rotate: '10deg', opacity: 0 },
 }
 
 export default function App() {
@@ -39,18 +44,33 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="overflow-x-hidden">
-        <Nav />
-        <aside>
-          <Intro />
-          <HeroImage />
-        </aside>
-        <NavSecondary />
-        <AnimatePresence exitBeforeEnter>
-          <motion.div key={location.pathname} {...pageAnimation}>
-            {outlet}
-          </motion.div>
-        </AnimatePresence>
+      <body className="overflow-x-hidden relative flex flex-col h-screen w-full">
+        <div className="">
+          <Nav />
+          <aside>{/* <Intro /> */}</aside>
+          <NavSecondary />
+        </div>
+        <div className="grow relative w-full flex flex-col justify-center items-center">
+          <img
+            className="w-full fixed top-0 left-0"
+            src="/assets/images/flowers-left.png"
+            alt=""
+          />
+          <img
+            className="w-full fixed bottom-0 right-0"
+            src="/assets/images/flowers-right.png"
+            alt=""
+          />
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              {...pageAnimation}
+              className="h-full max-w-full flex flex-col items-center justify-center"
+            >
+              {outlet}
+            </motion.div>
+          </AnimatePresence>
+        </div>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

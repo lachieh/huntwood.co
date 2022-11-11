@@ -9,7 +9,7 @@ export default function Venue() {
   }, [])
 
   return (
-    <div className="mt-8">
+    <div className="mt-8 mb-auto">
       <Card>
         <Markdown>{
           /* md */ `
