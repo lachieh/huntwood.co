@@ -31,19 +31,21 @@ const getSheetData = async () => {
   const sheets = await getSheetsApi()
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId: SHEET_ID,
-    range: "'Invite List'!A2:E",
+    range: "'Invite List'!A2:G",
   })
   return res.data.values as string[][]
 }
 
 export const getGuests = async (): Promise<Guest[]> => {
   const data = await getSheetData()
-  const guests = data.map((row) => ({
-    id: row[0] || '',
-    names: row[1] || '',
-    // guests: Number(row[2]) || 0,
-    guest1: row[3] || '',
-    guest2: row[4] || '',
+  const guests = data.map((col) => ({
+    id: col[0] || '',
+    names: col[1] || '',
+    guests: col[2] || '',
+    guest1: col[3] || '',
+    guest2: col[4] || '',
+    guest3: col[5] || '',
+    guest4: col[6] || '',
   }))
   return guests || []
 }
@@ -57,6 +59,8 @@ export const addRsvp = async (data: RSVPData): Promise<number> => {
       phone,
       guest1Attending,
       guest2Attending,
+      guest3Attending,
+      guest4Attending,
       shuttle,
       dietary,
       message,
@@ -76,6 +80,8 @@ export const addRsvp = async (data: RSVPData): Promise<number> => {
             phone,
             guest1Attending,
             guest2Attending,
+            guest3Attending,
+            guest4Attending,
             shuttle,
             dietary,
             message,

@@ -1,4 +1,4 @@
-import type { Guest, RSVPData } from '~/routes/rsvp'
+import type { Invite, RSVPData } from '~/routes/rsvp'
 import { useFetcher } from '@remix-run/react'
 import { useMemo, useState } from 'react'
 import Button from '~/components/Button'
@@ -9,43 +9,51 @@ import Text from '~/components/Text'
 import Textarea from '~/components/Textarea'
 
 type Props = {
-  guest: Guest
+  invite: Invite
   onSuccess: () => void
 }
 
-const RSVPForm = ({ guest }: Props) => {
+const RSVPForm = ({ invite }: Props) => {
   const rsvp = useFetcher<RSVPData>()
   const initialData = useMemo(
     () => ({
-      names: guest?.names,
+      names: invite?.names,
       email: '',
       phone: '',
       guest1Attending: undefined,
       guest2Attending: undefined,
+      guest3Attending: undefined,
+      guest4Attending: undefined,
       shuttle: false,
       dietary: '',
       message: '',
       songs: [],
     }),
-    [guest],
+    [invite],
   )
   const [data, setData] = useState<RSVPData>(rsvp.data ?? initialData)
-  const many = !!guest?.guest2
-  const pronoun = many ? 'We' : 'I'
-  const allAnswered = many
-    ? typeof data.guest1Attending !== 'undefined' &&
-      typeof data.guest2Attending !== 'undefined'
-    : typeof data.guest1Attending !== 'undefined'
-  const allAttending = many
-    ? data.guest1Attending === true && data.guest2Attending === true
-    : data.guest1Attending === true
-  const someAttending = many
-    ? allAnswered &&
-      (data.guest1Attending === true || data.guest2Attending === true)
-    : data.guest1Attending === true
-  const noneAttending = many
-    ? data.guest1Attending === false && data.guest2Attending === false
-    : data.guest1Attending === false
+  const guestsArray = [
+    ...[invite.guest1 ?? null],
+    ...[invite.guest2 ?? null],
+    ...[invite.guest3 ?? null],
+    ...[invite.guest4 ?? null],
+  ].filter((x) => x)
+  const guestsAnswers = [
+    ...[invite.guest1 ? data.guest1Attending : undefined],
+    ...[invite.guest2 ? data.guest2Attending : undefined],
+    ...[invite.guest3 ? data.guest3Attending : undefined],
+    ...[invite.guest4 ? data.guest4Attending : undefined],
+  ]
+  const many = guestsArray.length > 1
+  const pronoun = many ? 'We are' : 'I am'
+  const allAnswered = guestsAnswers.every((x) => typeof x !== 'undefined')
+  const allAttending = guestsAnswers.every(
+    (x) => typeof x !== 'undefined' && x === true,
+  )
+  const someAttending = guestsAnswers.some(
+    (x) => typeof x !== 'undefined' && x === true,
+  )
+  const noneAttending = guestsAnswers.every((x) => x === false)
 
   const update = (key: string, value: any) => {
     setData({ ...data, [key]: value })
@@ -81,7 +89,7 @@ const RSVPForm = ({ guest }: Props) => {
   return (
     <div>
       <p className="text-center">
-        <Text size="lg">{guest?.names}</Text>
+        <Text size="lg">{invite?.names}</Text>
       </p>
       <Text as="p" size="md" className="text-center mb-6">
         Hi! 👋 We'd love to see you on our special day! Please fill out the form
@@ -91,81 +99,64 @@ const RSVPForm = ({ guest }: Props) => {
         <Text as="p" size="md" className="mb-4">
           Who is attending?
         </Text>
-        <div className="flex flex-row">
-          <Text size="md" className="mr-4">
-            {guest?.guest1}
-          </Text>
+        {guestsArray.map((guest, idx) => {
+          const name = 'guest' + (idx + 1) + 'Attending'
+          return (
+            <div key={guest} className="flex flex-row">
+              <Text size="md" className="mr-4">
+                {guest}
+              </Text>
+              <label className="inline-flex flex-row mb-6 items-center">
+                <InputRadio
+                  name={name}
+                  onChange={(e) =>
+                    update(
+                      name,
+                      (e.target as HTMLInputElement).value === 'true',
+                    )
+                  }
+                  value="true"
+                />
+                <Text size="md" className="ml-2 mr-4">
+                  Yes
+                </Text>
+              </label>
+              <label className="inline-flex flex-row mb-6 items-center">
+                <InputRadio
+                  name={name}
+                  onChange={(e) =>
+                    update(
+                      name,
+                      (e.target as HTMLInputElement).value === 'true',
+                    )
+                  }
+                  value="false"
+                />
+                <Text size="md" className="ml-2 mr-4">
+                  No
+                </Text>
+              </label>
+            </div>
+          )
+        })}
+      </div>
+      {allAnswered && (allAttending || someAttending) && (
+        <>
+          <div className="mb-2">
+            <Text size="md">
+              If there is enough interest, we will organise a shuttle bus from
+              Gosford Station to the Venue
+            </Text>
+          </div>
           <label className="inline-flex flex-row mb-6 items-center">
-            <InputRadio
-              name="guest1Attending"
-              onChange={(e) =>
-                update(
-                  'guest1Attending',
-                  (e.target as HTMLInputElement).value === 'true',
-                )
-              }
+            <InputCheckbox
+              onChange={(e) => update('shuttle', e.target.value === 'true')}
               value="true"
             />
-            <Text size="md" className="ml-2 mr-4">
-              Yes
+            <Text size="md" className="ml-2">
+              {pronoun} interested in the shuttle bus
             </Text>
           </label>
-          <label className="inline-flex flex-row mb-6 items-center">
-            <InputRadio
-              name="guest1Attending"
-              onChange={(e) =>
-                update(
-                  'guest1Attending',
-                  (e.target as HTMLInputElement).value === 'true',
-                )
-              }
-              value="false"
-            />
-            <Text size="md" className="ml-2 mr-4">
-              No
-            </Text>
-          </label>
-        </div>
-        {many && (
-          <div className="flex flex-row">
-            <Text size="md" className="mr-4">
-              {guest?.guest2}
-            </Text>
-            <label className="inline-flex flex-row mb-6 items-center">
-              <InputRadio
-                name="guest2Attending"
-                onChange={(e) =>
-                  update(
-                    'guest2Attending',
-                    (e.target as HTMLInputElement).value === 'true',
-                  )
-                }
-                value="true"
-              />
-              <Text size="md" className="ml-2 mr-4">
-                Yes
-              </Text>
-            </label>
-            <label className="inline-flex flex-row mb-6 items-center">
-              <InputRadio
-                name="guest2Attending"
-                onChange={(e) =>
-                  update(
-                    'guest2Attending',
-                    (e.target as HTMLInputElement).value === 'true',
-                  )
-                }
-                value="false"
-              />
-              <Text size="md" className="ml-2 mr-4">
-                No
-              </Text>
-            </label>
-          </div>
-        )}
-      </div>
-      {(allAttending || someAttending) && (
-        <>
           <div>
             <Text size="md">Contact Information (in case of wet weather)</Text>
           </div>
@@ -213,7 +204,7 @@ const RSVPForm = ({ guest }: Props) => {
             </Text>
             <Textarea onChange={(e) => update('message', e.target.value)} />
           </label>
-          <rsvp.Form action={`/rsvp/${guest?.id}`} method="post">
+          <rsvp.Form action={`/rsvp/${invite?.id}`} method="post">
             <input
               type="hidden"
               name="json"

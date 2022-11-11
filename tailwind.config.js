@@ -17,6 +17,7 @@ module.exports = {
       },
       white: colors.white,
       black: colors.black,
+      current: colors.current,
     },
     extend: {
       screens: {

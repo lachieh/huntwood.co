@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 type Props = {}
 
 const Intro = (props: Props) => {
+  if (process.env.NODE_ENV === 'development') return null
   return (
     <motion.div
       style={{

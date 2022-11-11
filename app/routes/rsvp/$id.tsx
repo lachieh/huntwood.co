@@ -1,11 +1,9 @@
 import type { ActionFunction, LoaderFunction } from '@remix-run/node'
-import type { RSVPData } from '~/routes/rsvp'
-import type { Guest } from '~/routes/rsvp'
+import type { Invite, RSVPData } from '~/routes/rsvp'
 import { redirect, json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
 import { useEffect } from 'react'
 import Card from '~/components/Card'
-import { Markdown } from '~/components/Markdown'
 import RSVPForm from '~/components/RSVPForm'
 import { rsvpToken } from '~/cookies'
 import { setUser, setPage } from '~/utils/analytics'
@@ -52,14 +50,14 @@ export const action: ActionFunction = async ({ request, params, context }) => {
 }
 
 export default function RSVP() {
-  const guest = useLoaderData<Guest>()
+  const invite = useLoaderData<Invite>()
   useEffect(() => {
     setPage('RSVP Form')
-    setUser(guest)
-  }, [guest])
+    setUser(invite)
+  }, [invite])
   return (
     <div className="mt-8 mb-auto w-[954px] max-w-full">
-      <Card front={<RSVPForm guest={guest} onSuccess={() => {}} />} />
+      <Card front={<RSVPForm invite={invite} onSuccess={() => {}} />} />
     </div>
   )
 }

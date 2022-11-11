@@ -5,11 +5,14 @@ import { Outlet, useNavigate, useParams } from 'react-router'
 import { rsvpToken } from '~/cookies'
 import { getGuests } from '~/utils/sheetsService'
 
-export interface Guest {
+export interface Invite {
   id: string
   names: string
+  guests: string
   guest1: string
   guest2?: string
+  guest3?: string
+  guest4?: string
 }
 
 export interface RSVPData {
@@ -18,6 +21,9 @@ export interface RSVPData {
   phone: string
   guest1Attending?: boolean
   guest2Attending?: boolean
+  guest3Attending?: boolean
+  guest4Attending?: boolean
+  shuttle?: boolean
   dietary: string
   message: string
   success?: boolean
