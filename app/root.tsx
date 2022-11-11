@@ -44,13 +44,15 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="overflow-x-hidden relative flex flex-col h-screen w-full">
+      <body className="overflow-x-hidden relative flex flex-col h-screen w-full bg-tan-light">
         <div className="">
           <Nav />
-          <aside>{/* <Intro /> */}</aside>
+          <aside>
+            <Intro />
+          </aside>
           <NavSecondary />
         </div>
-        <div className="grow relative w-full flex flex-col justify-center items-center">
+        <div className="grow relative w-full flex flex-col justify-center items-center bg-white">
           <img
             className="w-full fixed top-0 left-0"
             src="/assets/images/flowers-left.png"

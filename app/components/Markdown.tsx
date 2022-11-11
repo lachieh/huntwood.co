@@ -15,7 +15,7 @@ interface Props {
  */
 export const Markdown = ({ children }: Props): ReactElement => {
   return (
-    <div className="prose max-w-4xl mx-auto prose-strong:font-medium">
+    <div className="prose max-w-4xl my-8 mx-auto prose-strong:font-medium">
       <ReactMarkdown
         remarkPlugins={[remarkGfm] as unknown as ReactMarkdown.PluggableList}
         rehypePlugins={[rehypeRaw] as unknown as ReactMarkdown.PluggableList}
