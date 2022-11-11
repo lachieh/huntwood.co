@@ -38,12 +38,9 @@ const RSVPForm = ({ invite }: Props) => {
     ...[invite.guest3 ?? null],
     ...[invite.guest4 ?? null],
   ].filter((x) => x)
-  const guestsAnswers = [
-    ...[invite.guest1 ? data.guest1Attending : undefined],
-    ...[invite.guest2 ? data.guest2Attending : undefined],
-    ...[invite.guest3 ? data.guest3Attending : undefined],
-    ...[invite.guest4 ? data.guest4Attending : undefined],
-  ]
+  const guestsAnswers = guestsArray.map(
+    (_, i) => data[('guest' + (i + 1) + 'Attending') as 'guest1Attending'],
+  )
   const many = guestsArray.length > 1
   const pronoun = many ? 'We are' : 'I am'
   const allAnswered = guestsAnswers.every((x) => typeof x !== 'undefined')
@@ -145,7 +142,7 @@ const RSVPForm = ({ invite }: Props) => {
           <div className="mb-2">
             <Text size="md">
               If there is enough interest, we will organise a shuttle bus from
-              Gosford Station to the Venue
+              Gosford Station to the venue
             </Text>
           </div>
           <label className="inline-flex flex-row mb-6 items-center">

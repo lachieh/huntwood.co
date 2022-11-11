@@ -1,4 +1,4 @@
-import type { Guest } from '~/routes/rsvp'
+import type { Invite } from '~/routes/rsvp'
 import { useFetcher, useLoaderData } from '@remix-run/react'
 import { useEffect } from 'react'
 import Button from '~/components/Button'
@@ -9,10 +9,10 @@ import { setUser } from '~/utils/analytics'
 type Props = {}
 
 const RSVPForm = (props: Props) => {
-  const guestFetcher = useFetcher<{ guest: Guest } | { error: string }>()
-  const existingGuest = useLoaderData<Guest | undefined>()
+  const guestFetcher = useFetcher<{ guest: Invite } | { error: string }>()
+  const existingGuest = useLoaderData<Invite | undefined>()
   const guestInfo =
-    (guestFetcher.data as { guest: Guest })?.guest ?? existingGuest
+    (guestFetcher.data as { guest: Invite })?.guest ?? existingGuest
   const guestError = (guestFetcher?.data as { error: string })?.error
 
   useEffect(() => {
