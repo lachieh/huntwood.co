@@ -35,7 +35,7 @@ const Card = ({
   }
 
   return (
-    <div className="my-12 relative max-w-[954px] w-[95%] mx-auto [perspective:100vw]">
+    <div className="my-12 relative max-w-[954px] w-[95%] mx-auto [perspective:1500px]">
       <motion.main
         {...frontAnimationProps}
         animate={flipped ? 'hidden' : 'visible'}

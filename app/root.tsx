@@ -29,9 +29,9 @@ export const meta: MetaFunction = () => ({
 
 export const pageAnimation: MotionProps = {
   transition: { duration: 0.5, ease: 'easeInOut' },
-  initial: { x: '-100%', rotate: '-10deg', opacity: 0 },
-  animate: { x: '0', rotate: '0deg', opacity: 1 },
-  exit: { x: '100%', rotate: '10deg', opacity: 0 },
+  initial: { x: '-100%', y: '-50px', rotate: '-10deg', opacity: 0 },
+  animate: { x: '0', y: '0px', rotate: '0deg', opacity: 1 },
+  exit: { x: '100%', y: '-50px', rotate: '10deg', opacity: 0 },
 }
 
 export default function App() {
@@ -44,7 +44,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="overflow-x-hidden relative flex flex-col h-screen w-full bg-tan-light">
+      <body className="overflow-x-hidden relative flex flex-col h-screen bg-tan-light">
         <div className="">
           <Nav />
           <aside>
@@ -54,12 +54,12 @@ export default function App() {
         </div>
         <div className="grow relative w-full flex flex-col justify-center items-center bg-white">
           <img
-            className="w-full fixed top-0 left-0"
+            className="w-full fixed top-0 left-0 pointer-events-none"
             src="/assets/images/flowers-left.png"
             alt=""
           />
           <img
-            className="w-full fixed bottom-0 right-0"
+            className="w-full fixed bottom-0 right-0 pointer-events-none"
             src="/assets/images/flowers-right.png"
             alt=""
           />

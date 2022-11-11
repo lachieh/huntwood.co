@@ -147,7 +147,7 @@ const RSVPForm = ({ invite }: Props) => {
           </div>
           <label className="inline-flex flex-row mb-6 items-center">
             <InputCheckbox
-              onChange={(e) => update('shuttle', e.target.value === 'true')}
+              onChange={(e) => update('shuttle', e.target.checked)}
               value="true"
             />
             <Text size="md" className="ml-2">
