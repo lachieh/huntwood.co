@@ -29,6 +29,14 @@
       <td>{{#if guest2Attending}}Yes{{else}}No{{/if}}</td>
     </tr>
     <tr>
+      <td><strong>Guest 3 Attending</strong></td>
+      <td>{{#if guest3Attending}}Yes{{else}}No{{/if}}</td>
+    </tr>
+    <tr>
+      <td><strong>Guest 4 Attending</strong></td>
+      <td>{{#if guest5Attending}}Yes{{else}}No{{/if}}</td>
+    </tr>
+    <tr>
       <td><strong>Needs Shuttle?</strong></td>
       <td>{{#if shuttle}}Yes{{else}}No{{/if}}</td>
     </tr>
@@ -40,25 +48,6 @@
     <tr>
       <td><strong>Message</strong></td>
       <td>{{message}}</td>
-    </tr>
-    {{/if}}
-    {{#if songs}}
-    <tr>
-      <td colspan="2">
-        <strong>Songs</strong><br/>
-        <table>
-          {{#each songs}}
-          <tr class="padding: 0 0 10px;">
-            <td><img style="width: 45px; display: block; height: auto; margin-right: 6px" src="{{image}}" alt="" /></td>
-            <td class="padding: 0;">
-              <strong>{{name}}</strong><br />
-              {{#each artists}} {{this}}{{#unless @last}}, {{/unless}}{{/each}}
-            </td>
-          </tr>
-          {{/each}}
-        </table>
-        <a href="https://open.spotify.com/playlist/3w6tofcv8p4M9ryTGKukT7?si=ed258d6fb9e04974">Spotify Playlist</a> has been updated.
-      </td>
     </tr>
     {{/if}}
   </table>
