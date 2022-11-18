@@ -14,10 +14,6 @@ export default function Venue() {
         <Markdown>{`
 # Venue
 
-### Attire
-
-Cocktail Attire
-
 ### Location
 
 The Lookout at Glenworth Valley Weddings<br />
@@ -33,15 +29,17 @@ Arrive at 2:30pm, reception to follow, ending by 10:30pm
 
 ### Accommodation
 
-The wedding venue is located between Gosford and Hornsby and there are plenty of AirBnBs and hotels around the area.
+The wedding venue is located between Gosford and Hornsby and there are plenty of Air BnBs and hotels around the area.
 
-Glenworth Valley also has Glamping tents and cabins available. For the night of the wedding, we have booked 4 of their cabins, of which, we will be using one of them. They are 2 bedrooms each, and if you would like to stay in one of them, please let us know and we will distribute them as fairly as possible. (they’re not free)
+Glenworth Valley also has Glamping options and camping space available on site.
+
+If you'd like to glamp follow the link below. When booking, advise that you're attending a wedding to ensure all our wedding guests are set up close to the venue and together. 
+
+[Simple Pleasures Camping @ Glenworth Valley](https://simplepleasurescamping.co/glenworth-valley-glamping)
 
 ### Wet Weather Plans
 
-What, you’re scared of a little sky water?
-
-If it's raining and we can’t use the lookout, we will use the Reception building on the property
+If it's raining and we can’t use the Lookout, we will use the Reception building on the property. If there is a light spritz of rain, clear umbrellas will be provided, however they are limited and will have to be shared.
 
 ### Parking
 

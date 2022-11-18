@@ -16,25 +16,27 @@ export default function FAQ() {
 # Q + A
 
 ### What should I wear?
-Cocktail dresses and suits
+Cocktail Attire.
+
+Ladies, wear your comfy heels as there is a short gravelled walk from the ceremony carpark to 'The Lookout.'
+
+Plus, we want you pulling out all your best dance moves on the D-Floor!!
 
 ### How do I get there? 
 
-Drive or uber.
-
-If there is enough interest we will organise a bus to and from GOSSY STAYSH
+Drive, Uber, Taxi or get yourself a designated driver. If there is enough interest, we will organise a bus to and from Gosford Station, which is a great central meeting point.
 
 ### Is the wedding indoors or outdoors? 
 
-Ceremony outdoors, reception indoors
+Outdoor ceremony (weather permitted), indoor reception.
 
 ### Are kids invited?
 
-No, this is a time to get loose with the adults.
+No, this is a time to get loose and litty with the adults!
 
-### Where do the gifts on the registry go? 
+### Is there a gift registry?
 
-dont gimme gifts, gimme money - Cards on the day or PayID 0402028518
+No. There will be a wishing well provided on the day if you would like to contribute to the newly-weds.
 `
         }</Markdown>
       </Card>
