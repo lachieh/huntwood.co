@@ -15,7 +15,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const cookie = (await rsvpToken.parse(cookieHeader)) || {}
   if (cookie.rsvpToken) return json(cookie.rsvpToken)
   const guests = await getGuests()
-  const found = guests.find((g) => g.id === params?.id)
+  const found = guests.find((g) => g && g.id === params?.id)
   cookie.rsvpToken = found
   if (!found) redirect('/#rsvp')
   return json(found, {

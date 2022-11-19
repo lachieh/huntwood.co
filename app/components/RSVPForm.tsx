@@ -33,10 +33,10 @@ const RSVPForm = ({ invite }: Props) => {
   )
   const [data, setData] = useState<RSVPData>(rsvp.data ?? initialData)
   const guestsArray = [
-    ...[invite.guest1 ?? null],
-    ...[invite.guest2 ?? null],
-    ...[invite.guest3 ?? null],
-    ...[invite.guest4 ?? null],
+    ...[invite?.guest1 ?? null],
+    ...[invite?.guest2 ?? null],
+    ...[invite?.guest3 ?? null],
+    ...[invite?.guest4 ?? null],
   ].filter((x) => x)
   const guestsAnswers = guestsArray.map(
     (_, i) => data[('guest' + (i + 1) + 'Attending') as 'guest1Attending'],
