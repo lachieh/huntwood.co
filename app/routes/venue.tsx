@@ -25,7 +25,7 @@ Continue to the end of Cooks Road and follow the signage to the parking (see bel
 
 ### Times
 
-Arrive at 2:30pm, reception to follow, ending by 10:30pm
+Arrive on April 15th, 2023 at 2:30pm. Reception will follow and will end by 10:30pm.
 
 ### Accommodation
 

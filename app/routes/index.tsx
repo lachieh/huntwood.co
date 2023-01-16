@@ -45,6 +45,9 @@ export default function Index() {
                 alt=""
                 className="w-full "
               />
+              <div className="mt-8 -mb-8 text-center uppercase font-semibold">
+                April 15<sup className="text-[0.6em] font-bold">th</sup>, 2023
+              </div>
             </div>
             <div className="mb-8">
               <Button onClick={() => setFlipped(true)}>RSVP</Button>
