@@ -1,10 +1,8 @@
-import type { Guest } from '~/routes/rsvp'
-import * as FullStory from '@fullstory/browser'
-
 export function trigger(event: string) {
   if (typeof window === 'undefined') return
   try {
-    FullStory.event(event, {})
+    // TODO: Replace with GA or whatever
+    // FullStory.event(event, {})
   } catch (e) {
     console.error(e)
   }
@@ -13,21 +11,23 @@ export function trigger(event: string) {
 export function setPage(pageName: string) {
   if (typeof window === 'undefined') return
   try {
-    FullStory.setVars('page', {
-      pageName,
-    })
+    // TODO: Replace with GA or whatever
+    // FullStory.setVars('page', {
+    //   pageName,
+    // })
   } catch (e) {
     console.error(e)
   }
 }
 
-export function setUser(guest: Guest) {
+export function setUser(user: { id: string; name: string }) {
   if (typeof window === 'undefined') return
-  if (!guest) return
+  if (!user) return
   try {
-    FullStory.identify(guest.id, {
-      displayName: guest.names,
-    })
+    // TODO: Replace with GA or whatever
+    // FullStory.identify(user.id, {
+    //   displayName: user.name,
+    // })
   } catch (e) {
     console.error(e)
   }

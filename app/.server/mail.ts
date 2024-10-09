@@ -1,10 +1,9 @@
-import type { RSVPData } from '../routes/rsvp'
-import type { MessagesSendResult } from 'mailgun.js/interfaces/Messages'
 import * as fs from 'fs'
 import * as path from 'path'
 import FormData from 'form-data'
 import Handlebars from 'handlebars'
-import Mailgun from 'mailgun.js'
+import Mailgun, { type MessagesSendResult } from 'mailgun.js'
+import { RSVPData } from '~/routes/rsvp'
 
 const config = {
   key: process.env.MAILGUN_API_KEY ?? '',
@@ -37,7 +36,7 @@ function buildTemplate<T = any>(
 ): HandlebarsTemplateDelegate<T> {
   const templateFile = path.resolve(
     // load from within .netlify/functions-internal/ folder
-    `${__dirname}/../../templates/${template}.hbs`,
+    `${import.meta.dirname}/../../templates/${template}.hbs`,
   )
   const templateContent = fs.readFileSync(templateFile, 'utf8')
   return Handlebars.compile(templateContent)

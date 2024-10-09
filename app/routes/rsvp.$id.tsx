@@ -7,7 +7,7 @@ import Card from '~/components/Card'
 import RSVPForm from '~/components/RSVPForm'
 import { rsvpToken } from '~/cookies'
 import { setUser, setPage } from '~/utils/analytics'
-import { rsvpTemplate, sendMail } from '~/utils/mailService'
+import { rsvpTemplate, sendMail } from '~/.server/mail'
 import { addRsvp, getGuests } from '~/utils/sheetsService'
 
 export const loader: LoaderFunction = async ({ request, params }) => {
@@ -53,7 +53,7 @@ export default function RSVP() {
   const invite = useLoaderData<Invite>()
   useEffect(() => {
     setPage('RSVP Form')
-    setUser(invite)
+    setUser({ id: invite.id, name: invite.names })
   }, [invite])
   return (
     <div className="mt-8 mb-auto w-[954px] max-w-full">

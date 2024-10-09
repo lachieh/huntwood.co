@@ -1,6 +1,7 @@
-const colors = require('tailwindcss/colors')
+import type { Config } from 'tailwindcss'
+import colors from 'tailwindcss/colors'
 
-module.exports = {
+export default {
   content: ['./app/**/*.{js,jsx,ts,tsx}'],
   theme: {
     colors: {
@@ -23,7 +24,22 @@ module.exports = {
       screens: {
         xs: '400px',
       },
+      fontFamily: {
+        sans: ['Poppins', 'Helvetica Neue', 'Arial', 'sans-serif'],
+      },
+      fontWeight: {
+        light: '200',
+        DEFAULT: '300',
+        normal: '300',
+        bold: '500',
+      },
+      fontSize: {
+        sm: ['12px', '18px'],
+        base: ['14px', '20px'],
+        lg: ['16px', '24px'],
+        xl: ['20px', '28px'],
+      },
     },
   },
   plugins: [require('@tailwindcss/typography')],
-}
+} satisfies Config

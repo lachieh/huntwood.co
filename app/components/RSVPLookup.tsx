@@ -1,10 +1,8 @@
-import type { Invite } from '~/routes/rsvp'
 import { useFetcher, useLoaderData } from '@remix-run/react'
-import { useEffect } from 'react'
 import Button from '~/components/Button'
 import Input from '~/components/Input'
 import Text from '~/components/Text'
-import { setUser } from '~/utils/analytics'
+import { Invite } from '~/routes/rsvp'
 
 type Props = {}
 
@@ -14,10 +12,6 @@ const RSVPForm = (props: Props) => {
   const guestInfo =
     (guestFetcher.data as { guest: Invite })?.guest ?? existingGuest
   const guestError = (guestFetcher?.data as { error: string })?.error
-
-  useEffect(() => {
-    if (guestInfo?.names) setUser(guestInfo)
-  }, [guestInfo])
 
   return (
     <guestFetcher.Form
@@ -93,8 +87,8 @@ const RSVPForm = (props: Props) => {
               </Button>
               <div className="text-center mt-4">
                 <Text size="sm">
-                  Not you? Try again with the name on your invite or contact
-                  Kate&nbsp;or&nbsp;Fletcher.
+                  Not you? Try again with the name on your invite or contact{' '}
+                  <span className="whitespace-nowrap">Kate or Fletcher</span>.
                 </Text>
               </div>
             </div>

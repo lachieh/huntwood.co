@@ -1,21 +1,6 @@
-@font-face {
-  font-family: 'TT Chocolates';
-  src: url('/assets/fonts/tt-chocolates-regular.woff2') format('woff2'),
-       url('/assets/fonts/tt-chocolates-regular.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'TT Chocolates';
-  src: url('/assets/fonts/tt-chocolates-medium.woff2') format('woff2'),
-       url('/assets/fonts/tt-chocolates-medium.woff') format('woff');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400&display=swap');
 
 body {
-  font-family: 'TT Chocolates', Gotham, 'Arial', sans-serif;
+  font-weight: 300;
+  font-size: 13px;
 }

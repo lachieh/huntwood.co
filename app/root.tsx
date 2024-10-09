@@ -1,31 +1,37 @@
 import type { MetaFunction, LinksFunction } from '@remix-run/node'
 import type { MotionProps } from 'framer-motion'
 import { useLocation } from '@remix-run/react'
-import {
-  Links,
-  LiveReload,
-  Meta,
-  Scripts,
-  ScrollRestoration,
-} from '@remix-run/react'
+import { Links, Meta, Scripts, ScrollRestoration } from '@remix-run/react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useOutlet } from 'react-router'
 import Intro from '~/components/Intro'
 import Nav from '~/components/Nav'
 import NavSecondary from '~/components/NavSecondary'
-import fontStyles from '~/styles/fonts.css'
-import tailwindStyles from '~/styles/tailwind.css'
+import fontStyles from '~/styles/fonts.css?url'
+import tailwindStyles from '~/styles/tailwind.css?url'
 
 export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: tailwindStyles },
   { rel: 'stylesheet', href: fontStyles },
 ]
 
-export const meta: MetaFunction = () => ({
-  charset: 'utf-8',
-  title: 'Kate & Fletcher',
-  viewport: 'width=device-width,initial-scale=1',
-})
+export const meta: MetaFunction = () => {
+  return [
+    { title: 'Hunter & Heywood' },
+    {
+      name: 'description',
+      content: 'This app is the best',
+    },
+    {
+      name: 'charset',
+      content: 'utf-8',
+    },
+    {
+      name: 'viewport',
+      content: 'width=device-width,initial-scale=1',
+    },
+  ]
+}
 
 export const pageAnimation: MotionProps = {
   transition: { duration: 0.5, ease: 'easeInOut' },
@@ -75,7 +81,6 @@ export default function App() {
         </div>
         <ScrollRestoration />
         <Scripts />
-        <LiveReload />
       </body>
     </html>
   )

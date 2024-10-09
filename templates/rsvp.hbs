@@ -1,55 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>New RSVP from {{names}}</title>
-</head>
-<body>
-  <table>
-    <tr>
-      <td><strong>Names</strong></td>
-      <td>{{names}}</td>
-    </tr>
-    <tr>
-      <td><strong>Email Address</strong></td>
-      <td>{{#if email}}<a href="mailto:{{email}}">{{email}}</a>{{else}}None provided{{/if}}</td>
-    </tr>
-    <tr>
-      <td><strong>Phone Number</strong></td>
-      <td>{{#if phone}}<a href="tel:{{phone}}">{{phone}}</a>{{else}}None provided{{/if}}</td>
-    </tr>
-    <tr>
-      <td><strong>Guest 1 Attending</strong></td>
-      <td>{{#if guest1Attending}}Yes{{else}}No{{/if}}</td>
-    </tr>
-    <tr>
-      <td><strong>Guest 2 Attending</strong></td>
-      <td>{{#if guest2Attending}}Yes{{else}}No{{/if}}</td>
-    </tr>
-    <tr>
-      <td><strong>Guest 3 Attending</strong></td>
-      <td>{{#if guest3Attending}}Yes{{else}}No{{/if}}</td>
-    </tr>
-    <tr>
-      <td><strong>Guest 4 Attending</strong></td>
-      <td>{{#if guest5Attending}}Yes{{else}}No{{/if}}</td>
-    </tr>
-    <tr>
-      <td><strong>Needs Shuttle?</strong></td>
-      <td>{{#if shuttle}}Yes{{else}}No{{/if}}</td>
-    </tr>
-    <tr>
-      <td><strong>Dietary Requirements?</strong></td>
-      <td>{{#if dietary}}{{dietary}}{{else}}No Dietary Requirements{{/if}}</td>
-    </tr>
-    {{#if message}}
-    <tr>
-      <td><strong>Message</strong></td>
-      <td>{{message}}</td>
-    </tr>
-    {{/if}}
-  </table>
-</body>
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta http-equiv='X-UA-Compatible' content='IE=edge' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>New RSVP from {{names}}</title>
+  </head>
+  <body>
+    <table>
+      <tr>
+        <td><strong>Names</strong></td>
+        <td>{{names}}</td>
+      </tr>
+      <tr>
+        <td><strong>Email Address</strong></td>
+        <td>{{#if email}}<a href='mailto:{{email}}'>{{email}}</a>{{else}}None
+            provided{{/if}}</td>
+      </tr>
+      <tr>
+        <td><strong>Phone Number</strong></td>
+        <td>{{#if phone}}<a href='tel:{{phone}}'>{{phone}}</a>{{else}}None
+            provided{{/if}}</td>
+      </tr>
+      <tr>
+        <td><strong>Guest 1 Attending</strong></td>
+        <td>{{#if guest1Attending}}Yes{{else}}No{{/if}}</td>
+      </tr>
+      <tr>
+        <td><strong>Guest 2 Attending</strong></td>
+        <td>{{#if guest2Attending}}Yes{{else}}No{{/if}}</td>
+      </tr>
+      <tr>
+        <td><strong>Guest 3 Attending</strong></td>
+        <td>{{#if guest3Attending}}Yes{{else}}No{{/if}}</td>
+      </tr>
+      <tr>
+        <td><strong>Guest 4 Attending</strong></td>
+        <td>{{#if guest5Attending}}Yes{{else}}No{{/if}}</td>
+      </tr>
+      <tr>
+        <td><strong>Needs Shuttle?</strong></td>
+        <td>{{#if shuttle}}Yes{{else}}No{{/if}}</td>
+      </tr>
+      <tr>
+        <td><strong>Dietary Requirements?</strong></td>
+        <td>{{#if dietary}}{{dietary}}{{else}}No Dietary Requirements{{/if}}</td>
+      </tr>
+      {{#if message}}
+        <tr>
+          <td><strong>Message</strong></td>
+          <td>{{message}}</td>
+        </tr>
+      {{/if}}
+    </table>
+  </body>
 </html>
