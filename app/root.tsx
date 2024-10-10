@@ -50,7 +50,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="overflow-x-hidden relative flex flex-col h-screen bg-tan-light">
+      <body className="overflow-x-hidden overflow-y-scroll relative flex flex-col h-screen bg-tan-light">
         <div className="">
           <Nav />
           <aside>
