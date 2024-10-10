@@ -4,6 +4,7 @@ import FormData from 'form-data'
 import Handlebars from 'handlebars'
 import Mailgun, { type MessagesSendResult } from 'mailgun.js'
 import { RSVPData } from '~/routes/rsvp'
+import rsvpRawTemplate from './templates/rsvp.hbs?raw'
 
 const config = {
   key: process.env.MAILGUN_API_KEY ?? '',
@@ -31,15 +32,4 @@ export async function sendMail(
   })
 }
 
-function buildTemplate<T = any>(
-  template: string,
-): HandlebarsTemplateDelegate<T> {
-  const templateFile = path.resolve(
-    // load from within .netlify/functions-internal/ folder
-    `${import.meta.dirname}/../../templates/${template}.hbs`,
-  )
-  const templateContent = fs.readFileSync(templateFile, 'utf8')
-  return Handlebars.compile(templateContent)
-}
-
-export const rsvpTemplate = buildTemplate<RSVPData>('rsvp')
+export const rsvpTemplate = Handlebars.compile<RSVPData>(rsvpRawTemplate)
