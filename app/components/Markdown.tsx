@@ -1,3 +1,4 @@
+import { PluggableList } from 'node_modules/react-markdown/lib'
 import type { ReactElement } from 'react'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
@@ -17,8 +18,8 @@ export const Markdown = ({ children }: Props): ReactElement => {
   return (
     <div className="prose max-w-4xl my-8 mx-auto prose-strong:font-medium">
       <ReactMarkdown
-        remarkPlugins={[remarkGfm] as unknown as ReactMarkdown.PluggableList}
-        rehypePlugins={[rehypeRaw] as unknown as ReactMarkdown.PluggableList}
+        remarkPlugins={[remarkGfm] as unknown as PluggableList}
+        rehypePlugins={[rehypeRaw] as unknown as PluggableList}
       >
         {children}
       </ReactMarkdown>

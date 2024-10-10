@@ -1,4 +1,4 @@
-import type { Guest, RSVPData } from '~/routes/rsvp'
+import type { Invite, RSVPData } from '~/routes/rsvp'
 import { google } from 'googleapis'
 
 export interface GoogleApiKey {
@@ -22,8 +22,8 @@ const getSheetsApi = async () => {
     credentials: key,
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
   })
-  const authClient = await auth.getClient()
-  const sheets = google.sheets({ version: 'v4', auth: authClient })
+  google.options({ auth })
+  const sheets = google.sheets('v4')
   return sheets
 }
 
@@ -36,7 +36,7 @@ const getSheetData = async () => {
   return res.data.values as string[][]
 }
 
-export const getGuests = async (): Promise<Guest[]> => {
+export const getGuests = async (): Promise<Invite[]> => {
   const data = await getSheetData()
   const guests = data.map((col) => ({
     id: col[0] || '',
