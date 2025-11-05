@@ -1,7 +1,10 @@
+import { AdvancedTopographicalBackground } from "./advanced-topographical-background"
+
 export function Footer() {
   return (
-    <footer className="border-t border-gray-100 py-10 bg-[#f8fbf3]">
-      <div className="mx-auto max-w-7xl px-4 md:px-6 grid md:grid-cols-3 gap-8 items-start">
+    <footer className="relative border-t border-gray-100 py-10 overflow-hidden">
+      <AdvancedTopographicalBackground />
+      <div className="relative z-10 mx-auto max-w-7xl px-4 md:px-6 grid md:grid-cols-3 gap-8 items-start">
         <div className="space-y-3">
           <div className="flex items-center gap-3">
             <div className="h-8 w-8 rounded-xl bg-[#344330] flex items-center justify-center">
@@ -75,7 +78,7 @@ export function Footer() {
           </ul>
         </div>
       </div>
-      <div className="mx-auto max-w-7xl px-4 md:px-6 mt-8 text-xs text-[#62776b]">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 md:px-6 mt-8 text-xs text-[#62776b]">
         © {new Date().getFullYear()} Huntwood Co Pty Ltd. All rights reserved.
       </div>
     </footer>
