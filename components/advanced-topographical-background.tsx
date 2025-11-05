@@ -8,8 +8,8 @@ interface AdvancedTopographicalBackgroundProps {
 }
 
 export function AdvancedTopographicalBackground({
-  canvasBg = "rgba(157, 174, 152, 0.8)",
-  canvasFg = "#9DAE98"
+  canvasBg = "#D2DDB8",
+  canvasFg = "#BFCAA7"
 }: AdvancedTopographicalBackgroundProps = {}) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -32,8 +32,8 @@ export function AdvancedTopographicalBackground({
       const ctx = canvas.getContext("2d")!
 
       const computedStyle = getComputedStyle(canvas)
-      let lineColor = computedStyle.getPropertyValue("--canvas-fg").trim() || "#9DAE98"
-      let backgroundColor = computedStyle.getPropertyValue("--canvas-bg").trim() || "rgba(157, 174, 152, 0.8)"
+      let lineColor = computedStyle.getPropertyValue("--canvas-fg").trim() || "#BFCAA7"
+      let backgroundColor = computedStyle.getPropertyValue("--canvas-bg").trim() || "#D2DDB8"
 
       const frameValues: number[] = []
       const inputValues: number[][] = []
@@ -49,8 +49,8 @@ export function AdvancedTopographicalBackground({
       // Function to update colors from CSS custom properties
       function updateColors() {
         const style = getComputedStyle(canvas)
-        const newLineColor = style.getPropertyValue("--canvas-fg").trim() || "#9DAE98"
-        const newBackgroundColor = style.getPropertyValue("--canvas-bg").trim() || "rgba(157, 174, 152, 0.8)"
+        const newLineColor = style.getPropertyValue("--canvas-fg").trim() || "#BFCAA7"
+        const newBackgroundColor = style.getPropertyValue("--canvas-bg").trim() || "#D2DDB8"
 
         if (newLineColor !== lineColor || newBackgroundColor !== backgroundColor) {
           lineColor = newLineColor
