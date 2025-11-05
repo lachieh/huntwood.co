@@ -21,8 +21,7 @@ export function AdvancedTopographicalBackground() {
       const canvas = canvasRef.current!
       const ctx = canvas.getContext("2d")!
 
-      const computedStyle = getComputedStyle(document.documentElement)
-      const lineColor = computedStyle.getPropertyValue("--accent").trim()
+      const lineColor = "#9DAE98"
 
       const frameValues: number[] = []
       const inputValues: number[][] = []
