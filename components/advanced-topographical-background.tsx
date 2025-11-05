@@ -2,11 +2,21 @@
 
 import { useEffect, useRef } from "react"
 
-export function AdvancedTopographicalBackground() {
+interface AdvancedTopographicalBackgroundProps {
+  canvasBg?: string
+  canvasFg?: string
+}
+
+export function AdvancedTopographicalBackground({
+  canvasBg = "#D2DDB8",
+  canvasFg = "#BFCAA7"
+}: AdvancedTopographicalBackgroundProps = {}) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     if (!canvasRef.current) return
+
+    let cleanup: (() => void) | undefined
 
     const initCanvas = async () => {
       const ChriscoursesPerlinNoise = await import("@chriscourses/perlin-noise")
@@ -16,13 +26,14 @@ export function AdvancedTopographicalBackground() {
       const thresholdIncrement = 8
       const thickLineThresholdMultiple = 3
       const res = 5
-      const baseZOffset = 0.0002
+      const baseZOffset = 0.00048
 
       const canvas = canvasRef.current!
       const ctx = canvas.getContext("2d")!
 
-      const computedStyle = getComputedStyle(document.documentElement)
-      const lineColor = computedStyle.getPropertyValue("--accent").trim()
+      const computedStyle = getComputedStyle(canvas)
+      let lineColor = computedStyle.getPropertyValue("--canvas-fg").trim() || "#BFCAA7"
+      let backgroundColor = computedStyle.getPropertyValue("--canvas-bg").trim() || "#D2DDB8"
 
       const frameValues: number[] = []
       const inputValues: number[][] = []
@@ -35,8 +46,42 @@ export function AdvancedTopographicalBackground() {
       let noiseMin = 100
       let noiseMax = 0
 
+      // Function to update colors from CSS custom properties
+      function updateColors() {
+        const style = getComputedStyle(canvas)
+        const newLineColor = style.getPropertyValue("--canvas-fg").trim() || "#BFCAA7"
+        const newBackgroundColor = style.getPropertyValue("--canvas-bg").trim() || "#D2DDB8"
+
+        if (newLineColor !== lineColor || newBackgroundColor !== backgroundColor) {
+          lineColor = newLineColor
+          backgroundColor = newBackgroundColor
+          console.log("Canvas colors updated:", { lineColor, backgroundColor })
+        }
+      }
+
+      // Create a MutationObserver to watch for style changes
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.type === "attributes" && mutation.attributeName === "style") {
+            updateColors()
+          }
+        })
+      })
+
+      // Start observing the canvas element for attribute changes
+      observer.observe(canvas, {
+        attributes: true,
+        attributeFilter: ["style"]
+      })
+
       setupCanvas()
       animate()
+
+      // Assign cleanup function
+      cleanup = () => {
+        observer.disconnect()
+        window.removeEventListener("resize", canvasSize)
+      }
 
       function setupCanvas() {
         canvasSize()
@@ -67,8 +112,9 @@ export function AdvancedTopographicalBackground() {
         setTimeout(() => {
           requestAnimationFrame(() => animate())
         }, 1000 / MAX_FPS)
- 
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+        ctx.fillStyle = backgroundColor
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
 
         zOffset += baseZOffset
         generateNoise()
@@ -216,7 +262,22 @@ export function AdvancedTopographicalBackground() {
     }
 
     initCanvas()
+
+    return () => {
+      cleanup?.()
+    }
   }, [])
 
-  return <canvas ref={canvasRef} className="bg-accent/80 absolute inset-0 w-full h-full" style={{ pointerEvents: "none" }} />
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 w-full h-full"
+      style={{
+        pointerEvents: "none",
+        "--canvas-bg": canvasBg,
+        "--canvas-fg": canvasFg,
+        background: `var(--canvas-bg)`
+      } as React.CSSProperties}
+    />
+  )
 }
