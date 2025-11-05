@@ -2,7 +2,15 @@
 
 import { useEffect, useRef } from "react"
 
-export function AdvancedTopographicalBackground() {
+interface AdvancedTopographicalBackgroundProps {
+  canvasBg?: string
+  canvasFg?: string
+}
+
+export function AdvancedTopographicalBackground({
+  canvasBg = "rgba(157, 174, 152, 0.8)",
+  canvasFg = "#9DAE98"
+}: AdvancedTopographicalBackgroundProps = {}) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -21,7 +29,8 @@ export function AdvancedTopographicalBackground() {
       const canvas = canvasRef.current!
       const ctx = canvas.getContext("2d")!
 
-      const lineColor = "#9DAE98"
+      const computedStyle = getComputedStyle(canvas)
+      const lineColor = computedStyle.getPropertyValue("--canvas-fg").trim() || "#9DAE98"
 
       const frameValues: number[] = []
       const inputValues: number[][] = []
@@ -217,5 +226,16 @@ export function AdvancedTopographicalBackground() {
     initCanvas()
   }, [])
 
-  return <canvas ref={canvasRef} className="bg-accent/80 absolute inset-0 w-full h-full" style={{ pointerEvents: "none" }} />
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 w-full h-full"
+      style={{
+        pointerEvents: "none",
+        "--canvas-bg": canvasBg,
+        "--canvas-fg": canvasFg,
+        backgroundColor: canvasBg
+      } as React.CSSProperties}
+    />
+  )
 }
