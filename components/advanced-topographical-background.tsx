@@ -26,7 +26,7 @@ export function AdvancedTopographicalBackground({
       const thresholdIncrement = 8
       const thickLineThresholdMultiple = 3
       const res = 5
-      const baseZOffset = 0.00024
+      const baseZOffset = 0.00048
 
       const canvas = canvasRef.current!
       const ctx = canvas.getContext("2d")!
