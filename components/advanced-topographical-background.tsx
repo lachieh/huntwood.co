@@ -275,7 +275,8 @@ export function AdvancedTopographicalBackground({
       style={{
         pointerEvents: "none",
         "--canvas-bg": canvasBg,
-        "--canvas-fg": canvasFg
+        "--canvas-fg": canvasFg,
+        background: `var(--canvas-bg)`
       } as React.CSSProperties}
     />
   )
