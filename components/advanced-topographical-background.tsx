@@ -31,6 +31,7 @@ export function AdvancedTopographicalBackground({
 
       const computedStyle = getComputedStyle(canvas)
       const lineColor = computedStyle.getPropertyValue("--canvas-fg").trim() || "#9DAE98"
+      const backgroundColor = computedStyle.getPropertyValue("--canvas-bg").trim() || "rgba(157, 174, 152, 0.8)"
 
       const frameValues: number[] = []
       const inputValues: number[][] = []
@@ -75,8 +76,9 @@ export function AdvancedTopographicalBackground({
         setTimeout(() => {
           requestAnimationFrame(() => animate())
         }, 1000 / MAX_FPS)
- 
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+        ctx.fillStyle = backgroundColor
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
 
         zOffset += baseZOffset
         generateNoise()
@@ -233,8 +235,7 @@ export function AdvancedTopographicalBackground({
       style={{
         pointerEvents: "none",
         "--canvas-bg": canvasBg,
-        "--canvas-fg": canvasFg,
-        backgroundColor: canvasBg
+        "--canvas-fg": canvasFg
       } as React.CSSProperties}
     />
   )
