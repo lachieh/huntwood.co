@@ -35,6 +35,14 @@ export function ContactSection() {
           title="Let's map out your next step"
           subtitle="Sydney, Australia · fletcher@huntwood.co · +61 402 028 158"
         />
+        <div className="mt-6 flex justify-center">
+          <a
+            href="https://calendar.app.google/K2fwPXSiZ9NXKZ5k6"
+            className="rounded-xl px-4 py-2 text-sm font-medium text-white bg-[#344330] hover:bg-[#23301f] transition-colors"
+          >
+            Book a chat
+          </a>
+        </div>
         {/* <form className="mt-10 grid grid-cols-1 gap-4">
           <div className="grid md:grid-cols-2 gap-4">
             <input
