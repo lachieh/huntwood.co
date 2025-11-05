@@ -16,6 +16,8 @@ export function AdvancedTopographicalBackground({
   useEffect(() => {
     if (!canvasRef.current) return
 
+    let cleanup: (() => void) | undefined
+
     const initCanvas = async () => {
       const ChriscoursesPerlinNoise = await import("@chriscourses/perlin-noise")
 
@@ -30,8 +32,8 @@ export function AdvancedTopographicalBackground({
       const ctx = canvas.getContext("2d")!
 
       const computedStyle = getComputedStyle(canvas)
-      const lineColor = computedStyle.getPropertyValue("--canvas-fg").trim() || "#9DAE98"
-      const backgroundColor = computedStyle.getPropertyValue("--canvas-bg").trim() || "rgba(157, 174, 152, 0.8)"
+      let lineColor = computedStyle.getPropertyValue("--canvas-fg").trim() || "#9DAE98"
+      let backgroundColor = computedStyle.getPropertyValue("--canvas-bg").trim() || "rgba(157, 174, 152, 0.8)"
 
       const frameValues: number[] = []
       const inputValues: number[][] = []
@@ -44,8 +46,42 @@ export function AdvancedTopographicalBackground({
       let noiseMin = 100
       let noiseMax = 0
 
+      // Function to update colors from CSS custom properties
+      function updateColors() {
+        const style = getComputedStyle(canvas)
+        const newLineColor = style.getPropertyValue("--canvas-fg").trim() || "#9DAE98"
+        const newBackgroundColor = style.getPropertyValue("--canvas-bg").trim() || "rgba(157, 174, 152, 0.8)"
+
+        if (newLineColor !== lineColor || newBackgroundColor !== backgroundColor) {
+          lineColor = newLineColor
+          backgroundColor = newBackgroundColor
+          console.log("Canvas colors updated:", { lineColor, backgroundColor })
+        }
+      }
+
+      // Create a MutationObserver to watch for style changes
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.type === "attributes" && mutation.attributeName === "style") {
+            updateColors()
+          }
+        })
+      })
+
+      // Start observing the canvas element for attribute changes
+      observer.observe(canvas, {
+        attributes: true,
+        attributeFilter: ["style"]
+      })
+
       setupCanvas()
       animate()
+
+      // Assign cleanup function
+      cleanup = () => {
+        observer.disconnect()
+        window.removeEventListener("resize", canvasSize)
+      }
 
       function setupCanvas() {
         canvasSize()
@@ -226,6 +262,10 @@ export function AdvancedTopographicalBackground({
     }
 
     initCanvas()
+
+    return () => {
+      cleanup?.()
+    }
   }, [])
 
   return (
