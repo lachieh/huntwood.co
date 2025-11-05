@@ -36,16 +36,16 @@ export function HeroSection() {
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <a
-              href="#services"
+              href="https://calendar.app.google/K2fwPXSiZ9NXKZ5k6"
               className="rounded-xl px-4 py-2 text-sm font-medium text-white bg-[#344330] hover:bg-[#23301f] transition-colors"
             >
-              Explore services
+              Book a chat
             </a>
             <a
-              href="#contact"
+              href="#services"
               className="rounded-xl px-4 py-2 text-sm font-medium ring-1 ring-inset border-[#62776b] text-[#344330] hover:bg-gray-50 transition-colors"
             >
-              Book a chat
+              Explore services
             </a>
           </div>
           <div className="mt-6 text-xs text-[#62776b]">
